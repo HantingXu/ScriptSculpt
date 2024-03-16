@@ -46,11 +46,13 @@ INCLUDE_DIRECTORIES( ${OpenCV_INCLUDE_DIRS} )
 
 set(headers
     src/utilities.h
+    src/ConstLetter.h
     )
 
 set(sources
     src/main.cpp
     src/utilities.cpp
+    src/ConstLetter.cpp
     )
 
 list(SORT headers)
