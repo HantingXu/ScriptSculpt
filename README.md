@@ -7,3 +7,8 @@ Before Cmake, please download opencv 4.80 and set the opencv lib directory as Op
 ![](./visualization/letter_as_curves/u.png)
 ![](./visualization/letter_as_curves/n.png)
 ![](./visualization/letter_as_curves/y.png)
+    * For consistency, only Bezier curve segments of degree 3 is used, including the representation of straight lines. This allows for letter deformation later.
+    * Libararies Used: 
+        * FontForge (used to generate svg file from font file)
+        * svg.path (used to parse svg file)
+        * matplotlib (used to visualize Bezier curve segments), not part of the actual project
