@@ -1,6 +1,7 @@
 #pragma once
 #include <Eigen/Dense>
 #include <vector>
+#include <opencv2/opencv.hpp>
 
 using vec2 = Eigen::Vector2f;
 
@@ -21,9 +22,14 @@ public:
 	std::vector<Anchor> anchors;
 	Transform transform;
 	std::vector<vec2> controlPoints;
+	float boundingArea;
 	Letter();
 	Letter(char letter);
 	~Letter();
+	void generateControlPoints(char letter);
+	void generateArea(char letter);
+	void generateAnchorPoints(char letter);
+	void drawBezierCurve(cv::Mat&);
 };
 
 class ConstLetters {
@@ -31,5 +37,5 @@ public:
 	std::vector<Letter> letters;
 	ConstLetters();
 	~ConstLetters();
-	const Letter& getLetter(char letter);
+	Letter& getLetter(char letter);
 };
