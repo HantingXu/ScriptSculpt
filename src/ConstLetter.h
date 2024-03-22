@@ -5,10 +5,18 @@
 
 using vec2 = Eigen::Vector2f;
 
+enum anchorType {
+	ASCENDER, DESCENDER
+};
+
+enum anchorOrientation {
+	STRAIGHT, LEFT, RIGHT
+};
+
 struct Anchor {
-	int type;
-	int orientation;
-	std::pair<int, int> cutting;
+	anchorType type;
+	anchorOrientation orientation;
+	std::pair<vec2, vec2> cutting;
 };
 
 struct Transform {
@@ -18,11 +26,12 @@ struct Transform {
 };
 
 class Letter {
-public:
+private:
 	std::vector<Anchor> anchors;
 	Transform transform;
 	std::vector<vec2> controlPoints;
 	float boundingArea;
+public:
 	Letter();
 	Letter(char letter);
 	~Letter();
@@ -30,12 +39,16 @@ public:
 	void generateArea(char letter);
 	void generateAnchorPoints(char letter);
 	void drawBezierCurve(cv::Mat&);
+	void drawAnchors(cv::Mat&);
+	friend class ConstLetters;
 };
 
 class ConstLetters {
-public:
+private:
 	std::vector<Letter> letters;
+public:
 	ConstLetters();
 	~ConstLetters();
 	Letter& getLetter(char letter);
+	friend class Letter;
 };

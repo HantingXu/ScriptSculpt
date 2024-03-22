@@ -14,8 +14,7 @@ using Eigen::MatrixXd;
  */
 int main()
 {
-#define thinning 0
-#if thinning
+    /**
     cv::Mat src = cv::imread("../img/cat.png");
     if (!src.data)
         return -1;
@@ -32,19 +31,18 @@ int main()
     cv::imshow("dst", bw);
     cv::imshow("contour", ct);
     cv::waitKey();
- #endif
-#define bezier 1
-#if bezier
+    **/
+
     // Create a black image
-    cv::Mat image(1200, 1200, CV_8UC3, cv::Scalar(0, 0, 0));
+    cv::Mat image(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
 
     ConstLetters letters = ConstLetters();
     // Draw the B¨¦zier curve
-    letters.getLetter('A').drawBezierCurve(image);
+    letters.getLetter('M').drawBezierCurve(image);
+    letters.getLetter('M').drawAnchors(image);
 
     // Display the image
     cv::imshow("Bezier Curve", image);
     cv::waitKey(0);
-#endif
     return 0;
 }
