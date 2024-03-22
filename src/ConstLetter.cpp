@@ -1,5 +1,6 @@
 #include "ConstLetter.h"
 #include <iostream>
+#include <cstdlib>
 
 Letter::Letter()
 {
@@ -784,11 +785,12 @@ void Letter::drawBezierCurve(cv::Mat& image) {
 			points.push_back(vec2(this->controlPoints[i+2].x() + canvasCenter.x, canvasCenter.y - this->controlPoints[i+2].y()));
 			points.push_back(vec2(this->controlPoints[i+3].x() + canvasCenter.x, canvasCenter.y - this->controlPoints[i+3].y()));
 			std::vector<vec2> curvePoints = calculateBezierPoints(points, 100);
+			cv::Scalar color = cv::Scalar(rand() % 256, rand() % 256, rand() % 256);
 			for (size_t i = 0; i < curvePoints.size() - 1; ++i) {
 				cv::line(image,
 					cv::Point(curvePoints[i][0], curvePoints[i][1]),
 					cv::Point(curvePoints[i + 1][0], curvePoints[i + 1][1]),
-					cv::Scalar(255, 0, 0), 2);
+					color, 2);
 			}
 		}
 	}
@@ -808,5 +810,15 @@ void Letter::drawAnchors(cv::Mat& image) {
 			cv::Point(point1.x(), point1.y()),
 			cv::Point(point2.x(), point2.y()),
 			cv::Scalar(255, 255, 255), 2);
+	}
+}
+
+void Letter::drawControlPoints(cv::Mat& image) {
+	int canvasWidth = 800; // Width of the canvas
+	int canvasHeight = 800; // Height of the canvas
+	cv::Point canvasCenter(canvasWidth / 2, canvasHeight / 2);
+	for (int i = 0; i < this->controlPoints.size(); i++) {
+		vec2 point = vec2(controlPoints[i].x() + canvasCenter.x, canvasCenter.y - controlPoints[i].y());
+		cv::circle(image, cv::Point(point.x(), point.y()), 1, cv::Scalar(255, 255, 0), 2);
 	}
 }

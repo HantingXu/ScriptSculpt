@@ -36,6 +36,7 @@ public:
 	void generateAnchorPoints(char letter);
 	void drawBezierCurve(cv::Mat&);
 	void drawAnchors(cv::Mat&);
+	void drawControlPoints(cv::Mat&);
 	friend class ConstLetters;
 };
 

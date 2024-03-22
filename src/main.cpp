@@ -81,6 +81,7 @@ int main()
     // Draw the Bezier curve
     letters.getLetter('M').drawBezierCurve(image);
     letters.getLetter('M').drawAnchors(image);
+    letters.getLetter('M').drawControlPoints(image);
 
     // Display the image
     cv::imshow("Bezier Curve", image);
