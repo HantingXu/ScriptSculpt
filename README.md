@@ -14,5 +14,7 @@ Before Cmake, please download opencv 4.80 and set the opencv lib directory as Op
 ![](./visualization/letter_as_curves/n.png)
 ![](./visualization/letter_as_curves/y.png)
 
-## Beta Version Visualization
+
+- **Shape Preprocessing** 
+
 ![](./visualization/shape/overview.png)
