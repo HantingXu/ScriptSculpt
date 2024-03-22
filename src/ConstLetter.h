@@ -5,13 +5,9 @@
 
 using vec2 = Eigen::Vector2f;
 
-enum anchorType {
-	ASCENDER, DESCENDER
-};
+enum anchorType {ASCENDER, DESCENDER};
 
-enum anchorOrientation {
-	STRAIGHT, LEFT, RIGHT
-};
+enum anchorOrientation {STRAIGHT, LEFTANCHOR, RIGHTANCHOR};
 
 struct Anchor {
 	anchorType type;

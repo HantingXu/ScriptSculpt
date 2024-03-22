@@ -14,7 +14,7 @@ using Eigen::MatrixXd;
  */
 int main()
 {
-#define thinning 1
+#define thinning 0
 #if thinning
     cv::Mat src = cv::imread("../img/bunny.jpg");
     cv::Mat gray;
@@ -72,7 +72,7 @@ int main()
     cv::imshow("protrusions", protruImg);
     cv::waitKey();
 #endif
-#define bezier 0
+#define bezier 1
 #if bezier
     // Create a black image
     cv::Mat image(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
