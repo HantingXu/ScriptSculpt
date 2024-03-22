@@ -466,8 +466,8 @@ void utilityCore::processProtrusions(const std::vector<cv::Point>& centerline, s
     }
     float rad = rect.angle * TORADIAN;
     Vec2f mainAxis = cv::normalize(v1);
-    std::cout << "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" << std::endl;
-    std::cout << mainAxis << std::endl;
+    //std::cout << "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" << std::endl;
+    //std::cout << mainAxis << std::endl;
     for (int i = 0; i < protrustions.size(); i++)
     {
         int startIdx = findClosestPoint(centerline, protrustions[i].start);
@@ -489,7 +489,7 @@ void utilityCore::processProtrusions(const std::vector<cv::Point>& centerline, s
         }
         if (protrustions[i].axis[1] > 0)
             protrustions[i].orientation = DOWN;
-        std::cout << protrustions[i].axis << std::endl;
+        //std::cout << protrustions[i].axis << std::endl;
         // costheta
         float precursor = protrustions[i].axis.dot(mainAxis);
         if (precursor < -0.70710678118)
@@ -501,5 +501,5 @@ void utilityCore::processProtrusions(const std::vector<cv::Point>& centerline, s
             protrustions[i].orientation = RIGHT;
         }
     }
-    std::cout << "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" << std::endl;
+    //std::cout << "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" << std::endl;
 }

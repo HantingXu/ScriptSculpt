@@ -60,15 +60,15 @@ int main()
 
     //compute protrusion poisition on centerline
     utilityCore::processProtrusions(centerline, protrusions);
-    /*
+    
     for (int j = 0; j < protrusions.size(); j++)
     {
-        //cv::line(protruImg, protrusions[j].start, protrusions[j].end, 155, 2);
+        cv::line(protruImg, protrusions[j].start, protrusions[j].end, 155, 2);
         //std::cout << protrusions[j].projection << std::endl;
-        if (protrusions[j].orientation == 0)
+        //if (protrusions[j].orientation == 0)
             cv::circle(protruImg, centerline[protrusions[j].projection], 4, 200, -1);
         //std::cout << protrusions[j].orientation << std::endl;
-    }*/
+    }
     cv::imshow("protrusions", protruImg);
     cv::waitKey();
  #endif
