@@ -47,12 +47,14 @@ INCLUDE_DIRECTORIES( ${OpenCV_INCLUDE_DIRS} )
 set(headers
     src/utilities.h
     src/ConstLetter.h
+    src/sceneStruct.h
     )
 
 set(sources
     src/main.cpp
     src/utilities.cpp
     src/ConstLetter.cpp
+    src/trace_skeleton.cpp
     )
 
 list(SORT headers)

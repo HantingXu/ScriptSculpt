@@ -1,4 +1,4 @@
-
+#include "trace_skeleton.cpp"
 #include <opencv2/opencv.hpp>
 #include <Eigen/Dense>
 #include <iostream>
@@ -14,26 +14,65 @@ using Eigen::MatrixXd;
  */
 int main()
 {
-#define thinning 0
+#define thinning 1
 #if thinning
-    cv::Mat src = cv::imread("../img/cat.png");
-    if (!src.data)
-        return -1;
+    cv::Mat src = cv::imread("../img/bunny.jpg");
+    cv::Mat gray;
+    cv::cvtColor(src, gray, COLOR_BGR2GRAY);
+    cv::threshold(gray, gray, 170, 255, THRESH_BINARY_INV);
 
-    cv::Mat bw;
-    cv::Mat ct = src.clone();
-    cv::cvtColor(src, bw, COLOR_BGR2GRAY);
-    cv::threshold(bw, bw, 170, 255, THRESH_BINARY_INV);
-    
-    utilityCore::extractContour(bw, ct);
-    utilityCore::thinning(bw, bw);
+    //extract contour
+    std::vector<Point> contour;
+    cv::Mat contourImg = cv::Mat::zeros(gray.size(), gray.type());
+    utilityCore::extractContour(gray, contourImg, contour);
+    cv::imshow("contour", contourImg);
 
-    cv::imshow("src", src);
-    cv::imshow("dst", bw);
-    cv::imshow("contour", ct);
+    //extract protrusions
+    cv::Mat mask;
+    std::vector<Protrusion> protrusions;
+    utilityCore::genMask(gray, mask);
+    cv::Mat protruImg = cv::Mat::zeros(gray.size(), gray.type());
+    contourImg.copyTo(protruImg, mask);
+    cv::Mat nProtrusion = cv::Mat::zeros(gray.size(), gray.type());;
+    utilityCore::genProtrusions(protruImg, nProtrusion, protrusions);
+    /*
+    for (int j = 0; j < protrusions.size(); j++)
+    {
+        //cv::line(protruImg, protrusions[j].start, protrusions[j].end, 155, 2);
+        std::cout << protrusions[j].axis << std::endl;
+    }
+    cv::imshow("protrusions", protruImg);*/
+
+    //generate skeleton
+    std::vector<Point> centerline;
+
+    nProtrusion = 255 - nProtrusion - contourImg;
+    gray.copyTo(nProtrusion, nProtrusion);
+    cv::imshow("no protrusions", nProtrusion);
+    cv::Mat skeletonImg = cv::Mat::zeros(gray.size(), gray.type());
+    utilityCore::genSkeleton(nProtrusion.clone(), centerline);
+    for (int j = 0; j < centerline.size(); j++)
+    {
+        cv::circle(skeletonImg, centerline[j], 3, 255, 1);
+        std::cout << centerline[j] << std::endl;
+    }
+    cv::imshow("skeleton", skeletonImg);
+
+    //compute protrusion poisition on centerline
+    utilityCore::processProtrusions(centerline, protrusions);
+    /*
+    for (int j = 0; j < protrusions.size(); j++)
+    {
+        //cv::line(protruImg, protrusions[j].start, protrusions[j].end, 155, 2);
+        //std::cout << protrusions[j].projection << std::endl;
+        if (protrusions[j].orientation == 0)
+            cv::circle(protruImg, centerline[protrusions[j].projection], 4, 200, -1);
+        //std::cout << protrusions[j].orientation << std::endl;
+    }*/
+    cv::imshow("protrusions", protruImg);
     cv::waitKey();
  #endif
-#define bezier 1
+#define bezier 0
 #if bezier
     // Create a black image
     cv::Mat image(1200, 1200, CV_8UC3, cv::Scalar(0, 0, 0));
