@@ -5,7 +5,7 @@ Before Cmake, please download opencv 4.80 and set the opencv lib directory as Op
 - **Bezier Curve Representation of English letters** (Week of Mar 11th)
     * For consistency, only Bezier curve segments of degree 3 is used, including the representation of straight lines. This allows for letter deformation later.
     * Normalized all bounding area to be 160,000 (the actual width and height is consistent with the original aspect ration of each letter).
-    * Libraries Used: 
+    * Libraries Used:
         * FontForge (used to generate svg file from font file)
         * svg.path (used to parse svg file in python)
         * opencv (used to visualize Bezier curve segments in C++)
@@ -18,5 +18,7 @@ Before Cmake, please download opencv 4.80 and set the opencv lib directory as Op
 ![](./visualization/letter_as_curves/n.png)
 ![](./visualization/letter_as_curves/y.png)
 
-
+=======
+- **Shape Preprocessing** 
+![](./visualization/shape/overview.png)
 
