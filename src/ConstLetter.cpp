@@ -2,11 +2,15 @@
 #include <iostream>
 #include <cstdlib>
 
+#define M_PI       3.14159265358979323846
+
 Letter::Letter()
 {
-	transform.pos = vec2(0);
-	transform.ori = vec2(0);
-	transform.scale = vec2(1);
+	Transform transform;
+	transform.pos = vec2(0, 0);
+	transform.ori = 0;
+	transform.scale = vec2(1, 1);
+	this->transform = transform;
 }
 
 void Letter::generateControlPoints(char letter) {
@@ -734,6 +738,11 @@ void Letter::generateArea(char letter) {
 
 Letter::Letter(char letter)
 {
+	Transform transform;
+	transform.pos = vec2(0, 0);
+	transform.ori = 0.f;
+	transform.scale = vec2(1, 1);
+	this->transform = transform;
 	generateControlPoints(letter);
 	generateAnchorPoints(letter);
 	generateArea(letter);
@@ -779,11 +788,16 @@ void Letter::drawBezierCurve(cv::Mat& image) {
 	cv::Point canvasCenter(canvasWidth / 2, canvasHeight / 2);
 	for (int i = 0; i < this->controlPoints.size(); i+=4) {
 		{
+			std::vector<vec3> controlPointsTransformed;
+			for (int j = 0; j < 4; j++) {
+				vec3 point = vec3(this->controlPoints[i + j].x(), this->controlPoints[i + j].y(), 1);
+				controlPointsTransformed.push_back(this->getTransformMat() * point);
+			}
 			std::vector<vec2> points;
-			points.push_back(vec2(this->controlPoints[i].x() + canvasCenter.x, canvasCenter.y - this->controlPoints[i].y()));
-			points.push_back(vec2(this->controlPoints[i+1].x() + canvasCenter.x, canvasCenter.y - this->controlPoints[i+1].y()));
-			points.push_back(vec2(this->controlPoints[i+2].x() + canvasCenter.x, canvasCenter.y - this->controlPoints[i+2].y()));
-			points.push_back(vec2(this->controlPoints[i+3].x() + canvasCenter.x, canvasCenter.y - this->controlPoints[i+3].y()));
+			points.push_back(vec2(controlPointsTransformed[0].x() + canvasCenter.x, canvasCenter.y - controlPointsTransformed[0].y()));
+			points.push_back(vec2(controlPointsTransformed[1].x() + canvasCenter.x, canvasCenter.y - controlPointsTransformed[1].y()));
+			points.push_back(vec2(controlPointsTransformed[2].x() + canvasCenter.x, canvasCenter.y - controlPointsTransformed[2].y()));
+			points.push_back(vec2(controlPointsTransformed[3].x() + canvasCenter.x, canvasCenter.y - controlPointsTransformed[3].y()));
 			std::vector<vec2> curvePoints = calculateBezierPoints(points, 100);
 			cv::Scalar color = cv::Scalar(rand() % 256, rand() % 256, rand() % 256);
 			for (size_t i = 0; i < curvePoints.size() - 1; ++i) {
@@ -821,4 +835,37 @@ void Letter::drawControlPoints(cv::Mat& image) {
 		vec2 point = vec2(controlPoints[i].x() + canvasCenter.x, canvasCenter.y - controlPoints[i].y());
 		cv::circle(image, cv::Point(point.x(), point.y()), 1, cv::Scalar(255, 255, 0), 2);
 	}
+}
+
+void Letter::setScale(float x, float y) {
+	this->transform.scale = vec2(x, y);
+}
+
+void Letter::setRotate(float angle) {
+	this->transform.ori = angle;
+}
+
+void Letter::setTranslate(float x, float y) {
+	this->transform.pos = vec2(x, y);
+}
+
+mat3 Letter::getTransformMat() {
+	mat3 rot;
+	mat3 trans;
+	mat3 scale;
+
+	float rad = this->transform.ori * M_PI / 180.0; 
+	rot << cos(rad), -sin(rad), 0,
+		sin(rad), cos(rad), 0,
+		0, 0, 1;
+	trans << 1, 0, this->transform.pos.x(),
+		0, 1, this->transform.pos.y(),
+		0, 0, 1;
+	scale << this->transform.scale.x(), 0, 0,
+		0, this->transform.scale.y(), 0,
+		0, 0, 1;
+
+	mat3 transform = trans * rot * scale;
+
+	return transform;
 }

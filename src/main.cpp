@@ -79,9 +79,21 @@ int main()
 
     ConstLetters letters = ConstLetters();
     // Draw the Bezier curve
-    letters.getLetter('M').drawBezierCurve(image);
-    letters.getLetter('M').drawAnchors(image);
-    letters.getLetter('M').drawControlPoints(image);
+    Letter B = letters.getLetter('B');
+    Letter U = letters.getLetter('U');
+    Letter N = letters.getLetter('N');
+    B.setRotate(-45.f);
+    U.setRotate(-45.f);
+    N.setRotate(45.f);
+    B.setTranslate(-200, 200);
+    U.setTranslate(0, 0);
+    N.setTranslate(200, -200);
+    B.setScale(0.5, 0.5);
+    U.setScale(0.5, 0.5);
+    N.setScale(0.5, 0.5);
+    B.drawBezierCurve(image);
+    U.drawBezierCurve(image);
+    N.drawBezierCurve(image);
 
     // Display the image
     cv::imshow("Bezier Curve", image);

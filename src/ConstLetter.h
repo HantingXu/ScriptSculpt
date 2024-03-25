@@ -2,8 +2,12 @@
 #include <Eigen/Dense>
 #include <vector>
 #include <opencv2/opencv.hpp>
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 using vec2 = Eigen::Vector2f;
+using vec3 = Eigen::Vector3f;
+using mat3 = Eigen::Matrix3f;
 
 enum anchorType {ASCENDER, DESCENDER};
 
@@ -17,7 +21,7 @@ struct Anchor {
 
 struct Transform {
 	vec2 pos;
-	vec2 ori;
+	float ori;
 	vec2 scale;
 };
 
@@ -27,6 +31,8 @@ private:
 	Transform transform;
 	std::vector<vec2> controlPoints;
 	float boundingArea;
+	mat3 getTransformMat();
+
 public:
 	Letter();
 	Letter(char letter);
@@ -37,6 +43,10 @@ public:
 	void drawBezierCurve(cv::Mat&);
 	void drawAnchors(cv::Mat&);
 	void drawControlPoints(cv::Mat&);
+
+	void setScale(float x, float y);
+	void setRotate(float angle);
+	void setTranslate(float x, float y);
 	friend class ConstLetters;
 };
 
