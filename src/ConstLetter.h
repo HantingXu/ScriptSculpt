@@ -47,6 +47,8 @@ public:
 	void setScale(float x, float y);
 	void setRotate(float angle);
 	void setTranslate(float x, float y);
+
+	void getContour();
 	friend class ConstLetters;
 };
 

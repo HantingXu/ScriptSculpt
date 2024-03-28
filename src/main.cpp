@@ -14,7 +14,7 @@ using Eigen::MatrixXd;
  */
 int main()
 {
-#define thinning 0
+#define thinning 1
 #if thinning
     cv::Mat src = cv::imread("../img/bunny.jpg");
     cv::Mat gray;
@@ -25,6 +25,7 @@ int main()
     std::vector<Point> contour;
     cv::Mat contourImg = cv::Mat::zeros(gray.size(), gray.type());
     utilityCore::extractContour(gray, contourImg, contour);
+    int shapeArea = cv::contourArea(contour);
     cv::imshow("contour", contourImg);
 
     //extract protrusions
@@ -61,40 +62,52 @@ int main()
     //compute protrusion poisition on centerline
     utilityCore::processProtrusions(centerline, protrusions);
     
-    for (int j = 0; j < protrusions.size(); j++)
-    {
-        cv::line(protruImg, protrusions[j].start, protrusions[j].end, 155, 2);
+    //for (int j = 0; j < protrusions.size(); j++)
+    //{
+        //cv::line(protruImg, protrusions[j].start, protrusions[j].end, 155, 2);
         //std::cout << protrusions[j].projection << std::endl;
         //if (protrusions[j].orientation == 0)
-            cv::circle(protruImg, centerline[protrusions[j].projection], 4, 200, -1);
+        //cv::circle(protruImg, centerline[protrusions[j].projection], 4, 200, -1);
         //std::cout << protrusions[j].orientation << std::endl;
+    //}
+    //cv::imshow("protrusions", protruImg);
+
+    int numLetter = 5;
+    std::vector<int> midPoints;
+    std::vector<Eigen::Vector2f> normals;
+    utilityCore::subdivide(numLetter, centerline, midPoints, normals);
+    
+    for (int i = 0; i < numLetter; i++)
+    {
+        cv::circle(protruImg, centerline[midPoints[i]], 4, 200, -1);
+        cv::line(protruImg, centerline[midPoints[i]], Point(normals[i][0] * 14.0f, normals[i][1] * 14.0f) + centerline[midPoints[i]], 155, 1);
     }
     cv::imshow("protrusions", protruImg);
     cv::waitKey();
 #endif
-#define bezier 1
+#define bezier 0
 #if bezier
     // Create a black image
     cv::Mat image(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
 
     ConstLetters letters = ConstLetters();
     // Draw the Bezier curve
-    Letter B = letters.getLetter('B');
+    Letter I = letters.getLetter('I');
     Letter U = letters.getLetter('U');
     Letter N = letters.getLetter('N');
-    B.setRotate(-45.f);
+    I.setRotate(-45.f);
     U.setRotate(-45.f);
     N.setRotate(45.f);
-    B.setTranslate(-200, 200);
+    I.setTranslate(-200, 200);
     U.setTranslate(0, 0);
     N.setTranslate(200, -200);
-    B.setScale(0.5, 0.5);
+    I.setScale(0.5, 0.5);
     U.setScale(0.5, 0.5);
     N.setScale(0.5, 0.5);
-    B.drawBezierCurve(image);
+    I.drawBezierCurve(image);
     U.drawBezierCurve(image);
     N.drawBezierCurve(image);
-
+    I.getContour();
     // Display the image
     cv::imshow("Bezier Curve", image);
     cv::waitKey(0);

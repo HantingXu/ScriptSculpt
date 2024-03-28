@@ -2,6 +2,7 @@
 #include "trace_skeleton.cpp"
 #include <iostream>
 
+
 using namespace cv;
 #define PI 3.141592653589793238462643
 #define TORADIAN 0.01745329252
@@ -466,7 +467,6 @@ void utilityCore::processProtrusions(const std::vector<cv::Point>& centerline, s
     }
     float rad = rect.angle * TORADIAN;
     Vec2f mainAxis = cv::normalize(v1);
-    //std::cout << "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" << std::endl;
     //std::cout << mainAxis << std::endl;
     for (int i = 0; i < protrustions.size(); i++)
     {
@@ -501,5 +501,32 @@ void utilityCore::processProtrusions(const std::vector<cv::Point>& centerline, s
             protrustions[i].orientation = RIGHT;
         }
     }
-    //std::cout << "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" << std::endl;
+}
+
+int computeOverlap(const int area1, const int area2, const Mat& img)//const std::vector<cv::Point>& contour1, const std::vector<cv::Point>& contour2)
+{
+    int tot = cv::countNonZero(img);
+    return area1 + area2 - tot;
+}
+
+//centerline size should be bigger than 0
+void utilityCore::subdivide(const int number, const std::vector<cv::Point>& centerline, std::vector<int>& midPoints, std::vector<Eigen::Vector2f>& normals)
+{
+    int last = centerline.size();
+    int interval = last / number;
+    last = last - 1;
+    int first = interval / 2;
+    for (int i = 0; i < number; i++)
+    {
+        int index = first + i * interval;
+        midPoints.push_back(index);
+        int leftEnd1 = max(0, index - 3);
+        int rightEnd1 = min(index + 3, last);
+        int leftEnd2 = max(0, index - 5);
+        int rightEnd2 = min(index + 5, last);
+        Eigen::Vector2f tangent1 = Eigen::Vector2f((centerline[rightEnd1] - centerline[leftEnd1]).x, (centerline[rightEnd1] - centerline[leftEnd1]).y).normalized();
+        Eigen::Vector2f tangent2 = Eigen::Vector2f((centerline[rightEnd2] - centerline[leftEnd2]).x, (centerline[rightEnd2] - centerline[leftEnd2]).y).normalized();
+        Eigen::Vector2f tangent = (tangent1 + tangent2) / 2.0f;
+        normals.push_back(Eigen::Vector2f(tangent[1], -tangent[0]));
+    }
 }

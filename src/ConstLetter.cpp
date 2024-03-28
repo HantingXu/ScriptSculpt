@@ -869,3 +869,60 @@ mat3 Letter::getTransformMat() {
 
 	return transform;
 }
+
+
+void Letter::getContour() {
+	cv::Mat m = cv::Mat::zeros(cv::Size(800, 800), cv::COLOR_BGR2GRAY);
+	int canvasWidth = 800; // Width of the canvas
+	int canvasHeight = 800; // Height of the canvas
+	cv::Point canvasCenter(canvasWidth / 2, canvasHeight / 2);
+	std::vector<std::vector<cv::Point>> letter;
+	vec2 start = vec2(-1.0f, -1.0f);
+	bool closed = false;
+	int idx = -1;
+	for (int i = 0; i < this->controlPoints.size(); i += 4) {
+		{
+			std::vector<vec3> controlPointsTransformed;
+			for (int j = 0; j < 4; j++) {
+				vec3 point = vec3(this->controlPoints[i + j].x(), this->controlPoints[i + j].y(), 1);
+				controlPointsTransformed.push_back(this->getTransformMat() * point);
+			}
+			std::vector<vec2> points;
+			points.push_back(vec2(controlPointsTransformed[0].x() + canvasCenter.x, canvasCenter.y - controlPointsTransformed[0].y()));
+			points.push_back(vec2(controlPointsTransformed[1].x() + canvasCenter.x, canvasCenter.y - controlPointsTransformed[1].y()));
+			points.push_back(vec2(controlPointsTransformed[2].x() + canvasCenter.x, canvasCenter.y - controlPointsTransformed[2].y()));
+			points.push_back(vec2(controlPointsTransformed[3].x() + canvasCenter.x, canvasCenter.y - controlPointsTransformed[3].y()));
+			if (!closed)
+			{
+				letter.push_back(std::vector<cv::Point>());
+				++idx;
+				start = points[0];
+				closed = true;
+			}
+			else
+			{
+				if (start == points[3])
+					closed = false;
+			}
+			std::vector<vec2> curvePoints = calculateBezierPoints(points, 100);
+			
+			std::cout << cv::Point(points[0][0], points[0][1]) << ", " << cv::Point(points[3][0], points[3][1]) << std::endl;
+			for (size_t i = 0; i < curvePoints.size() - 1; ++i) {
+				cv::LineIterator iter(cv::Point(curvePoints[i][0], curvePoints[i][1]), cv::Point(curvePoints[i + 1][0], curvePoints[i + 1][1]));
+				for (int j = 0; j < iter.count - 1; j++, ++iter)
+				{
+					letter[idx].push_back(iter.pos());
+					cv::circle(m, iter.pos(), 1, 255, 2);
+				}
+			}
+		}
+	}
+	cv::drawContours(m, letter, -1, 255, -1);
+	int area = 0;
+	for (int i = 0; i < letter.size(); i++)
+	{
+		area += cv::contourArea(letter[i]);
+	}
+	std::cout << area << std::endl;
+	cv::imshow("test", m);
+}
