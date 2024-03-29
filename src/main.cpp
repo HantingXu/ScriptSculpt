@@ -54,7 +54,7 @@ int main()
 
     nProtrusion = 255 - nProtrusion - contourImg;
     gray.copyTo(nProtrusion, nProtrusion);
-    cv::imshow("no protrusions", nProtrusion);
+    //cv::imshow("no protrusions", nProtrusion);
     cv::Mat skeletonImg = cv::Mat::zeros(gray.size(), gray.type());
     utilityCore::genSkeleton(nProtrusion.clone(), centerline);
     for (int j = 0; j < centerline.size(); j++)
@@ -62,7 +62,7 @@ int main()
         cv::circle(skeletonImg, centerline[j], 3, 255, 1);
         std::cout << centerline[j] << std::endl;
     }
-    //cv::imshow("skeleton", skeletonImg);
+    cv::imshow("skeleton", skeletonImg);
     imgShape.centerline = centerline;
 
     //compute protrusion poisition on centerline
@@ -90,7 +90,7 @@ int main()
         cv::line(protruImg, centerline[midPoints[i]], Point(normals[i][0] * 14.0f, normals[i][1] * 14.0f) + centerline[midPoints[i]], 155, 1);
     }
     cv::imshow("protrusions", protruImg);*/
-    cv::waitKey();
+    //cv::waitKey();
 #endif
 #define bezier 0
 #if bezier
@@ -130,19 +130,30 @@ int main()
 #if initial
     ConstLetters l = ConstLetters();
     std::vector<Letter> letters;
-    Letter b = l.getLetter('B');
-    Letter u = l.getLetter('U');
-    Letter n1 = l.getLetter('N');
-    Letter n2 = l.getLetter('N');
-    Letter y = l.getLetter('Y');
-    letters.push_back(b);
-    letters.push_back(u);
-    letters.push_back(n1);
-    letters.push_back(n2);
-    letters.push_back(y);
-    ImgShape img;
-    LetterAlignment align = LetterAlignment(letters, img);
+    Letter l1 = l.getLetter('B');
+    Letter l2 = l.getLetter('U');
+    Letter l3 = l.getLetter('N');
+    Letter l4 = l.getLetter('N');
+    Letter l5 = l.getLetter('Y');
+    //Letter l6 = l.getLetter('Y');
+    //Letter l7 = l.getLetter('O');
+    //Letter l8 = l.getLetter('O');
+    letters.push_back(l1);
+    letters.push_back(l2);
+    letters.push_back(l3);
+    letters.push_back(l4);
+    letters.push_back(l5);
+    //letters.push_back(l6);
+    //letters.push_back(l7);
+    //letters.push_back(l8);
+    //ImgShape img;
+    LetterAlignment align = LetterAlignment(letters, imgShape);
     align.initialAlignment();
+    for (int i = 0; i < align.letters.size(); i++) {
+        align.letters[i].drawBezierCurve(contourImg);
+    }
+    cv::imshow("Bezier Curve", contourImg);
+    cv::waitKey(0);
 #endif
     return 0;
 }

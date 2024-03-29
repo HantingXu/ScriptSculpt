@@ -9,17 +9,19 @@ struct Correspondence {
 	Letter letter;
 	float locCompat;
 	float oriCompat;
+	int letterIdx;
 
 	Correspondence() : locCompat(-INFINITY), oriCompat(-INFINITY) {};
-	Correspondence(const Anchor& a, const Letter& l, float loc, float ori) : anchor(a), letter(l), locCompat(loc), oriCompat(ori) {};
+	Correspondence(const Anchor& a, const Letter& l, float loc, float ori, int idx) : anchor(a), letter(l), locCompat(loc), oriCompat(ori), letterIdx(idx) {};
 };
 
 class LetterAlignment {
 private:
-	std::vector<Letter> letters;
 	ImgShape shape;
-	void findSums(std::map<Protrusion, std::array<Correspondence, 3>> &correspondence, int depth, float currentSum, std::map<Protrusion, Correspondence>& currCor, std::vector<float>& sums, std::vector<std::map<Protrusion, Correspondence>&> &correspondences);
+	void findSums(std::vector<std::array<Correspondence, 3>>& correspondence, int depth, float currentSum, std::vector<Correspondence>& currCor, std::vector<float>& sums, std::vector<std::vector<Correspondence>>& correspondences);
 public:
+	std::vector<Letter> letters;
+
 	LetterAlignment(std::vector<Letter>& letters, ImgShape &shape);
 	float positionalComp(const vec2& letter, const vec2& protrusion, int pathLength, int wordLength);
 	float orientationComp(const Anchor& anchor, const Protrusion& protrusion);

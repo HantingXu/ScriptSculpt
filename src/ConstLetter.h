@@ -24,6 +24,7 @@ private:
 	std::vector<vec2> controlPoints;
 	float boundingArea;
 	mat3 getTransformMat();
+	int id;
 
 public:
 	Letter();

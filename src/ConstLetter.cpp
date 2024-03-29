@@ -2,8 +2,6 @@
 #include <iostream>
 #include <cstdlib>
 
-#define M_PI       3.14159265358979323846
-
 Letter::Letter()
 {
 	Transform transform;
@@ -736,81 +734,107 @@ void Letter::generateArea(char letter) {
 	switch (letter) {
 		case 'A': {
 			area = 160774.f;
+			break;
 		}
 		case 'B': {
 			area = 121868.f;
+			break;
 		}
 		case 'C': {
 			area = 102161.f;
+			break;
 		}
 		case 'D': {
 			area = 121909.f;
+			break;
 		}
 		case 'E':{
 			area = 120725.f;
+			break;
 		}
 		case 'F': {
 			area = 98010.f;
+			break;
 		}
 		case 'G': {
 			area = 142384.f;
+			break;
 		}
 		case 'H': {
 			area = 94278.f;
+			break;
 		}
 		case 'I': {
 			area = 121724.f;
+			break;
 		}
 		case 'J': {
 			area = 125938.f;
+			break;
 		}
 		case 'K': {
 			area = 82824.f;
+			break;
 		}
 		case 'L': {
 			area = 151036.f;
+			break;
 		}
 		case 'M': {
 			area = 111033.f;
+			break;
 		}
 		case 'N': {
 			area = 115966.f;
+			break;
 		}
 		case 'O': {
 			area = 148686.f;
+			break;
 		}
 		case 'P': {
 			area = 127933.f;
+			break;
 		}
 		case 'Q': {
 			area = 127635.f;
+			break;
 		}
 		case 'R': {
 			area = 99546.f;
+			break;
 		}
 		case 'S': {
 			area = 104377.f;
+			break;
 		}
 		case 'T': {
 			area = 101232.f;
+			break;
 		}
 		case 'U': {
 			area = 111762.f;
+			break;
 		}
 		case 'V': {
 			area = 78736.f;
+			break;
 		}
 		case 'W': {
 			area = 85629.f;
+			break;
 		}
 		case 'X': {
 			area = 87847.f;
+			break;
 		}
 		case 'Y': {
 			area = 69133.f;
+			break;
 		}
 		case 'Z': {
 			area = 105530.f;
+			break;
 		}
 	}
 	this->boundingArea = area;
@@ -826,6 +850,7 @@ Letter::Letter(char letter)
 	generateControlPoints(letter);
 	generateAnchorPoints(letter);
 	generateArea(letter);
+	this->id = letter;
 }
 
 Letter::~Letter() {
@@ -863,8 +888,8 @@ std::vector<vec2> calculateBezierPoints(const std::vector<vec2>& controlPoints, 
 }
 
 void Letter::drawBezierCurve(cv::Mat& image) {
-	int canvasWidth = 800; // Width of the canvas
-	int canvasHeight = 800; // Height of the canvas
+	int canvasWidth = image.cols; // Width of the canvas
+	int canvasHeight = image.rows; // Height of the canvas
 	cv::Point canvasCenter(canvasWidth / 2, canvasHeight / 2);
 	for (int i = 0; i < this->controlPoints.size(); i+=4) {
 		{
@@ -874,12 +899,13 @@ void Letter::drawBezierCurve(cv::Mat& image) {
 				controlPointsTransformed.push_back(this->getTransformMat() * point);
 			}
 			std::vector<vec2> points;
-			points.push_back(vec2(controlPointsTransformed[0].x() + canvasCenter.x, canvasCenter.y - controlPointsTransformed[0].y()));
-			points.push_back(vec2(controlPointsTransformed[1].x() + canvasCenter.x, canvasCenter.y - controlPointsTransformed[1].y()));
-			points.push_back(vec2(controlPointsTransformed[2].x() + canvasCenter.x, canvasCenter.y - controlPointsTransformed[2].y()));
-			points.push_back(vec2(controlPointsTransformed[3].x() + canvasCenter.x, canvasCenter.y - controlPointsTransformed[3].y()));
+			points.push_back(vec2(controlPointsTransformed[0].x(), controlPointsTransformed[0].y()));
+			points.push_back(vec2(controlPointsTransformed[1].x(), controlPointsTransformed[1].y()));
+			points.push_back(vec2(controlPointsTransformed[2].x(), controlPointsTransformed[2].y()));
+			points.push_back(vec2(controlPointsTransformed[3].x(), controlPointsTransformed[3].y()));
 			std::vector<vec2> curvePoints = calculateBezierPoints(points, 100);
-			cv::Scalar color = cv::Scalar(rand() % 256, rand() % 256, rand() % 256);
+			//cv::Scalar color = cv::Scalar(rand() % 256, rand() % 256, rand() % 256);
+			cv::Scalar color = cv::Scalar(255, 255, 255);
 			for (size_t i = 0; i < curvePoints.size() - 1; ++i) {
 				cv::line(image,
 					cv::Point(curvePoints[i][0], curvePoints[i][1]),
@@ -889,8 +915,8 @@ void Letter::drawBezierCurve(cv::Mat& image) {
 		}
 	}
 	//draw x, y-axis
-	cv::line(image, cv::Point(canvasCenter.x, 0), cv::Point(canvasCenter.x, canvasHeight), cv::Scalar(0, 255, 0), 1);
-	cv::line(image, cv::Point(0, canvasCenter.y), cv::Point(canvasWidth, canvasCenter.y), cv::Scalar(0, 255, 0), 1);
+	//cv::line(image, cv::Point(canvasCenter.x, 0), cv::Point(canvasCenter.x, canvasHeight), cv::Scalar(0, 255, 0), 1);
+	//cv::line(image, cv::Point(0, canvasCenter.y), cv::Point(canvasWidth, canvasCenter.y), cv::Scalar(0, 255, 0), 1);
 }
 
 void Letter::drawAnchors(cv::Mat& image) {
@@ -942,7 +968,7 @@ mat3 Letter::getTransformMat() {
 		0, 1, this->transform.pos.y(),
 		0, 0, 1;
 	scale << this->transform.scale.x(), 0, 0,
-		0, this->transform.scale.y(), 0,
+		0, -this->transform.scale.y(), 0,
 		0, 0, 1;
 
 	mat3 transform = trans * rot * scale;
@@ -998,12 +1024,16 @@ int Letter::getContour(cv::Mat& img, bool computeArea) {
 	int area = 0;
 	if (computeArea)
 	{
+		/**
 		for (int i = 0; i < letter.size(); i++)
 		{
 			area += cv::contourArea(letter[i]);
 		}
+		**/
+		area = cv::countNonZero(img);
 	}
 	cv::imshow("test", img);
+	//cv::imshow("test", img);
 	return area;
 	
 }

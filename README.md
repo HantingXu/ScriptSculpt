@@ -1,6 +1,15 @@
 # ScriptSculpt
 Before Cmake, please download opencv 4.80 and set the opencv lib directory as OpenCV_DIR environment variable in your computer.
 
+## Beta Version Visualization
+- **Initial Alignment** (Week of Mar 25th)
+![](./visualization/initial/initialAlignment.png)
+    * Anchor-Protrusion Correspondence
+        * Each protrusion is possibly matched with an anchor based on the loacation and orientation compatibility score.
+    * Initial Placement
+        * First position letters that have a match with protrusion.
+        * Then position other letters, keeping them as evenly spaced as possible.
+
 ## Alpha Version Visualization
 - **Bezier Curve Representation of English letters** (Week of Mar 11th)
     * For consistency, only Bezier curve segments of degree 3 is used, including the representation of straight lines. This allows for letter deformation later.

@@ -33,27 +33,29 @@ float LetterAlignment::orientationComp(const Anchor& anchor, const Protrusion& p
 		}
 	}
 }
-void LetterAlignment::findSums(std::map<Protrusion, std::array<Correspondence, 3>>& correspondence, int depth, float currentSum, std::map<Protrusion, Correspondence>& currCor, std::vector<float> &sums, std::vector<std::map<Protrusion, Correspondence>&> &correspondences) {
+
+
+
+void LetterAlignment::findSums(std::vector<std::array<Correspondence, 3>> &correspondence, int depth, float currentSum, std::vector<Correspondence>& currCor, std::vector<float> &sums, std::vector<std::vector<Correspondence>> &correspondences) {
 	if (depth == shape.protrusions.size()) {
 		correspondences.push_back(currCor);
 		sums.push_back(currentSum);
 		return;
 	}
-
-	for (int i = 0; i < 3; ++i) {
-		Protrusion protrusion = shape.protrusions[depth];
-		currCor[protrusion] = correspondence[protrusion][i];
-		float currSum = 1 - correspondence[protrusion][i].locCompat * correspondence[protrusion][i].oriCompat;
+	for (int i = 0; i < 3; i++) {
+		currCor[depth] = correspondence[depth][i];
+		float currSum = 1 - correspondence[depth][i].locCompat * correspondence[depth][i].oriCompat;
 		findSums(correspondence, depth + 1, currentSum + currSum, currCor, sums, correspondences);
 	}
 }
+
 
 void LetterAlignment::initialAlignment() {
 	std::vector<int> midPoints;
 	std::vector<vec2> normals;
 	utilityCore::subdivide(letters.size(), shape.centerline, midPoints, normals);
 
-	std::map<Protrusion, std::array<Correspondence, 3>> correspondence;
+	std::vector<std::array<Correspondence, 3>> correspondence;
 
 
 	//first find top 3 location compatibility for each protrusion
@@ -71,18 +73,132 @@ void LetterAlignment::initialAlignment() {
 				auto minIt = std::min_element(locCompat.begin(), locCompat.end());
 				size_t index = std::distance(locCompat.begin(), minIt);
 				if (P_loc > *minIt && P_loc > 0.1f) {
-					corr[index] = Correspondence(anchor, letter, P_loc, P_sim);
+					corr[index] = Correspondence(anchor, letter, P_loc, P_sim, i);
 				}
 			}
 		}
-		correspondence[protrusion] = corr;
+		correspondence.push_back(corr);
 	}
 	//exhausitive search
 	std::vector<float> sums;
-	std::vector<std::map<Protrusion, Correspondence>&> correspondences;
-	std::map<Protrusion, Correspondence> currCor;
+	std::vector<std::vector<Correspondence>> correspondences;
+	std::vector<Correspondence> currCor(shape.protrusions.size());
 	findSums(correspondence, 0, 0, currCor, sums, correspondences);
+	//now need to check for incorrect order
+	float minScore = INFINITY;
+	auto minIt = std::min_element(sums.begin(), sums.end());
+	size_t index = std::distance(sums.begin(), minIt);
+	std::vector<Correspondence> bestCorrespondence = correspondences[index];
+	std::vector<Protrusion*> perLetter(letters.size(), nullptr);
+	for (int i = 0; i < letters.size(); i++) {
+		float bestScore = INFINITY;
+		for (int j = 0; j < bestCorrespondence.size(); j++) {
+			if (i == bestCorrespondence[j].letterIdx) {
+				float currScore = 1 - bestCorrespondence[j].locCompat * bestCorrespondence[j].oriCompat;
+				if (currScore < bestScore) {
+					currScore = bestScore;
+					perLetter[i] = &shape.protrusions[j];
+				}
+			}
+		}
+	}
+	//position letters
+	std::vector<bool> processed;
+	for (int i = 0; i < perLetter.size(); i++) {
+		bool hasCor = false;
+		if (perLetter[i] != nullptr) {
+			hasCor = true;
+		}
+		processed.push_back(hasCor);
+	}
+	std::vector<int> locations;
+
+	for (int i = 0; i < processed.size(); i++) {
+		bool hasCor = processed[i];
+		//float scale = shape.area / (2 * letters[i].boundingArea);
+		//std::cout << letters[i].boundingArea << std::endl;
+		letters[i].setScale(0.08f, 0.08f);
+
+		if (hasCor) {
+			Protrusion protrusion = *perLetter[i];
+			vec2 protrusionPos = vec2(shape.centerline[protrusion.projection].x, shape.centerline[protrusion.projection].y);
+			letters[i].setTranslate(protrusionPos.x(), protrusionPos.y());
+			locations.push_back(protrusion.projection);
+			vec2 axis = vec2(protrusion.axis[0], protrusion.axis[1]);
+			axis.normalize();
+			float rad;
+			if (protrusion.type == ASCEND){
+				rad = acosf(axis.dot(vec2(0, -1)));
+			}
+			else {
+				rad = acosf(axis.dot(vec2(0, 1)));
+			}
+
+			letters[i].setRotate(rad * 180.f / M_PI );
+		}
+		else {
+			locations.push_back(-1);
+		}
+	}
+
+	int start = -1;
+	int startIdx;
+	int end = -1;
+	int endIdx;
+	bool isCounting = false;
+	std::vector<int> indices;
+	for (int i = 0; i < locations.size(); i++) {
+		if (locations[i] == -1) {
+			if (i == 0 || i == locations.size() - 1) {
+				int loc = (i == 0) ? 0 : shape.centerline.size() - 1;
+				locations[i] = loc;
+				indices.push_back(i);
+			}
+			else {
+				if (!isCounting) {
+					isCounting = true;
+					start = locations[i - 1];
+					startIdx = i - 1;
+				}
+			}
+		}
+		else {
+			if (isCounting) {
+				end = locations[i];
+				endIdx = i;
+				int length = end - start;
+				int num = endIdx - startIdx - 1;
+				int space = length / (num + 1);
+				for (int j = startIdx + 1; j < endIdx; j++){
+					locations[j] = start + space;
+					indices.push_back(j);
+					space += space;
+				}
+				isCounting = false;
+			}
+		}
+	}
+	for (int i = 0; i < indices.size(); i++) {
+		int idx = indices[i];
+		vec2 pos = vec2(shape.centerline[locations[idx]].x, shape.centerline[locations[idx]].y);
+		letters[idx].setTranslate(pos.x(), pos.y());
+
+		int index = locations[idx];
+		int leftEnd1 = std::max(0, index - 3);
+		int end = shape.centerline.size() - 1;
+		int rightEnd1 = std::min(index + 3, end);
+		int leftEnd2 = std::max(0, index - 5);
+		int rightEnd2 = std::min(index + 5, end);
+		Eigen::Vector2f tangent1 = Eigen::Vector2f((shape.centerline[rightEnd1] - shape.centerline[leftEnd1]).x, (shape.centerline[rightEnd1] - shape.centerline[leftEnd1]).y).normalized();
+		Eigen::Vector2f tangent2 = Eigen::Vector2f((shape.centerline[rightEnd2] - shape.centerline[leftEnd2]).x, (shape.centerline[rightEnd2] - shape.centerline[leftEnd2]).y).normalized();
+		Eigen::Vector2f tangent = (tangent1 + tangent2) / 2.0f;
+		vec2 normal = Eigen::Vector2f(tangent[1], -tangent[0]);
+		normal.normalize();
+		float rad = acosf(normal.dot(vec2(0, -1)));
+		letters[indices[i]].setRotate(rad * 180.f / M_PI);
+	}
 }
+
 
 float LetterAlignment::aspectRatioScore(std::vector<Letter>& refinedLetters)
 {

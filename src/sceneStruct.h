@@ -1,6 +1,7 @@
 #pragma once
 #include <opencv2/opencv.hpp>
 #include <Eigen/Dense>
+#define M_PI       3.14159265358979323846
 
 #define STRAIGHT 0
 #define RIGHT 1
