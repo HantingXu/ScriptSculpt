@@ -1,9 +1,17 @@
 #pragma once
 #include <opencv2/opencv.hpp>
-#define UP 0
+#include <Eigen/Dense>
+
+using vec2 = Eigen::Vector2f;
+using vec3 = Eigen::Vector3f;
+using mat3 = Eigen::Matrix3f;
+
+#define STRAIGHT 0
 #define RIGHT 1
-#define DOWN 2
-#define LEFT 3
+#define LEFT 2
+#define ASCEND 0
+#define DESCEN 1
+
 struct Protrusion
 {
 	cv::Point start;

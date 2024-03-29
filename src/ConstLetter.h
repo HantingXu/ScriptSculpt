@@ -1,21 +1,13 @@
 #pragma once
-#include <Eigen/Dense>
 #include <vector>
 #include <opencv2/opencv.hpp>
 #define _USE_MATH_DEFINES
 #include <cmath>
-
-using vec2 = Eigen::Vector2f;
-using vec3 = Eigen::Vector3f;
-using mat3 = Eigen::Matrix3f;
-
-enum anchorType {ASCENDER, DESCENDER};
-
-enum anchorOrientation {STRAIGHT, LEFTANCHOR, RIGHTANCHOR};
+#include "sceneStruct.h"
 
 struct Anchor {
-	anchorType type;
-	anchorOrientation orientation;
+	int type;
+	int orientation;
 	std::pair<vec2, vec2> cutting;
 };
 

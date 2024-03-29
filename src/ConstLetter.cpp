@@ -441,7 +441,7 @@ void Letter::generateAnchorPoints(char letter) {
 		}
 		case 'B': {
 			Anchor anchor;
-			anchor.type = ASCENDER;
+			anchor.type = ASCEND;
 			anchor.orientation = STRAIGHT;
 			anchor.cutting = std::pair<vec2, vec2>(vec2(-51.70773584694285, 0), vec2(50.58365463287888, 0));
 			anchors = { anchor };
@@ -449,19 +449,19 @@ void Letter::generateAnchorPoints(char letter) {
 		}
 		case 'C': {
 			Anchor anchor1;
-			anchor1.type = ASCENDER;
-			anchor1.orientation = RIGHTANCHOR;
+			anchor1.type = ASCEND;
+			anchor1.orientation = RIGHT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(51.289031490396525, 74), vec2(51.289031490396525, 214));
 			Anchor anchor2;
-			anchor2.type = DESCENDER;
-			anchor2.orientation = RIGHTANCHOR;
+			anchor2.type = DESCEN;
+			anchor2.orientation = RIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(51.289031490396525, -104), vec2(51.289031490396525, -244));
 			anchors = { anchor1, anchor2 };
 			break;
 		}
 		case 'D': {
 			Anchor anchor;
-			anchor.type = ASCENDER;
+			anchor.type = ASCEND;
 			anchor.orientation = STRAIGHT;
 			anchor.cutting = std::pair<vec2, vec2>(vec2(-52.83181706100683, 0), vec2(49.459573418814905, 0));
 			anchors = { anchor };
@@ -469,15 +469,15 @@ void Letter::generateAnchorPoints(char letter) {
 		}
 		case 'E': {
 			Anchor anchor;
-			anchor.type = DESCENDER;
-			anchor.orientation = RIGHTANCHOR;
+			anchor.type = DESCEN;
+			anchor.orientation = RIGHT;
 			anchor.cutting = std::pair<vec2, vec2>(vec2(138.86711507756334, -103.61069725994362), vec2(139.58663380853517, -196.4286135553098));
 			anchors = { anchor };
 			break;
 		}
 		case 'F': {
 			Anchor anchor;
-			anchor.type = DESCENDER;
+			anchor.type = DESCEN;
 			anchor.orientation = STRAIGHT;
 			anchor.cutting = std::pair<vec2, vec2>(vec2(-65.74364210874278, -62.17061808109371), vec2(64.31443249768314, -62.17061808109371));
 			anchors = { anchor };
@@ -485,23 +485,23 @@ void Letter::generateAnchorPoints(char letter) {
 		}
 		case 'G': {
 			Anchor anchor;
-			anchor.type = DESCENDER;
-			anchor.orientation = LEFTANCHOR;
+			anchor.type = DESCEN;
+			anchor.orientation = LEFT;
 			anchor.cutting = std::pair<vec2, vec2>(vec2(-42.00786627188516, -31.505899703913872), vec2(64.17868458204677, -31.505899703913872));
 			anchors = { anchor };
 			break;
 		}
 		case 'H': {
 			Anchor anchor1;
-			anchor1.type = ASCENDER;
+			anchor1.type = ASCEND;
 			anchor1.orientation = STRAIGHT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-56.70820724739619, 37.60649533248379), vec2(51.932779268668085, 37.60649533248379));
 			Anchor anchor2;
-			anchor2.type = DESCENDER;
+			anchor2.type = DESCEN;
 			anchor2.orientation = STRAIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(-56.70820724739619, -72.82527667560352), vec2(51.932779268668085, -72.82527667560352));
 			Anchor anchor3;
-			anchor3.type = DESCENDER;
+			anchor3.type = DESCEN;
 			anchor3.orientation = STRAIGHT;
 			anchor3.cutting = std::pair<vec2, vec2>(vec2(157.5891232980273, -72.82527667560352), vec2(266.2301098140916, -72.82527667560352));
 			anchors = { anchor1, anchor2, anchor3 };
@@ -509,11 +509,11 @@ void Letter::generateAnchorPoints(char letter) {
 		}
 		case 'I': {
 			Anchor anchor1;
-			anchor1.type = ASCENDER;
+			anchor1.type = ASCEND;
 			anchor1.orientation = STRAIGHT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-89.43515938911302, 0), vec2(89.43515938911302, 0));
 			Anchor anchor2;
-			anchor2.type = DESCENDER;
+			anchor2.type = DESCEN;
 			anchor2.orientation = STRAIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(-89.43515938911302, -62.89945275717839), vec2(89.43515938911302, -62.89945275717839));
 			anchors = { anchor1, anchor2 };
@@ -522,11 +522,11 @@ void Letter::generateAnchorPoints(char letter) {
 		}
 		case 'J': {
 			Anchor anchor1;
-			anchor1.type = ASCENDER;
+			anchor1.type = ASCEND;
 			anchor1.orientation = STRAIGHT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-77.98313200390756, 50), vec2(77.98313200390756, 50));
 			Anchor anchor2;
-			anchor2.type = DESCENDER;
+			anchor2.type = DESCEN;
 			anchor2.orientation = STRAIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(-77.98313200390756, -80), vec2(77.98313200390756, -80));
 			anchors = { anchor1, anchor2 };
@@ -534,31 +534,31 @@ void Letter::generateAnchorPoints(char letter) {
 		}
 		case 'K': {
 			Anchor anchor1;
-			anchor1.type = ASCENDER;
+			anchor1.type = ASCEND;
 			anchor1.orientation = STRAIGHT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-49.54900031885929, 130.47903417299614), vec2(50.65008921483395, 130.47903417299614));
 			Anchor anchor2;
-			anchor2.type = DESCENDER;
+			anchor2.type = DESCEN;
 			anchor2.orientation = STRAIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(-49.54900031885929, -36.88647801515081), vec2(50.65008921483395, -36.88647801515081));
 			Anchor anchor3;
-			anchor3.type = ASCENDER;
-			anchor3.orientation = RIGHTANCHOR;
+			anchor3.type = ASCEND;
+			anchor3.orientation = RIGHT;
 			anchor3.cutting = std::pair<vec2, vec2>(vec2(50.65008921483395, 28.628311295340925), vec2(150.29863430053985, 0));
 			Anchor anchor4;
-			anchor4.type = DESCENDER;
-			anchor4.orientation = RIGHTANCHOR;
+			anchor4.type = DESCEN;
+			anchor4.orientation = RIGHT;
 			anchor4.cutting = std::pair<vec2, vec2>(vec2(50.65008921483395, -36.88647801515081), vec2(150.29863430053985, 0));
 			anchors = { anchor1, anchor2, anchor3, anchor4 };
 			break;
 		}
 		case 'L': {
 			Anchor anchor1;
-			anchor1.type = ASCENDER;
+			anchor1.type = ASCEND;
 			anchor1.orientation = STRAIGHT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-93.65406738283926, 142.36790462959084), vec2(93.65406738283926, 142.36790462959084));
 			Anchor anchor2;
-			anchor2.type = DESCENDER;
+			anchor2.type = DESCEN;
 			anchor2.orientation = STRAIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(-93.65406738283926, -142.36790462959084), vec2(93.65406738283926, -142.36790462959084));
 			anchors = { anchor1, anchor2 };
@@ -566,15 +566,15 @@ void Letter::generateAnchorPoints(char letter) {
 		}
 		case 'M': {
 			Anchor anchor1;
-			anchor1.type = DESCENDER;
+			anchor1.type = DESCEN;
 			anchor1.orientation = STRAIGHT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-256.2428093790937, 0), vec2(-149.03317419059934, 0));
 			Anchor anchor2;
-			anchor2.type = DESCENDER;
+			anchor2.type = DESCEN;
 			anchor2.orientation = STRAIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(-53.6048175942472, 0), vec2(53.6048175942472, 0));
 			Anchor anchor3;
-			anchor3.type = DESCENDER;
+			anchor3.type = DESCEN;
 			anchor3.orientation = STRAIGHT;
 			anchor3.cutting = std::pair<vec2, vec2>(vec2(149.03317419059934, 0), vec2(256.2428093790937, 0));
 			anchors = { anchor1, anchor2, anchor3 };
@@ -582,11 +582,11 @@ void Letter::generateAnchorPoints(char letter) {
 		}
 		case 'N': {
 			Anchor anchor1;
-			anchor1.type = DESCENDER;
+			anchor1.type = DESCEN;
 			anchor1.orientation = STRAIGHT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-202.0648130656233, 0), vec2(-66.1099295981799, 0));
 			Anchor anchor2;
-			anchor2.type = DESCENDER;
+			anchor2.type = DESCEN;
 			anchor2.orientation = STRAIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(66.1099295981799, 0), vec2(202.0648130656233, 0));
 			anchors = { anchor1, anchor2 };
@@ -598,7 +598,7 @@ void Letter::generateAnchorPoints(char letter) {
 		}
 		case 'P': {
 			Anchor anchor1;
-			anchor1.type = DESCENDER;
+			anchor1.type = DESCEN;
 			anchor1.orientation = STRAIGHT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-53.09327542696597, -41.42442368477565), vec2(53.09327542696597, -41.42442368477565));
 			anchors = { anchor1 };
@@ -606,7 +606,7 @@ void Letter::generateAnchorPoints(char letter) {
 		}
 		case 'Q': {
 			Anchor anchor1;
-			anchor1.type = DESCENDER;
+			anchor1.type = DESCEN;
 			anchor1.orientation = STRAIGHT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-57.7608161238421, -41.42442368477565), vec2(48.425734730089836, -41.42442368477565));
 			anchors = { anchor1 };
@@ -614,39 +614,39 @@ void Letter::generateAnchorPoints(char letter) {
 		}
 		case 'R': {
 			Anchor anchor1;
-			anchor1.type = ASCENDER;
+			anchor1.type = ASCEND;
 			anchor1.orientation = STRAIGHT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-81.35220844071671, 43.80503531423207), vec2(81.35220844071671, 43.80503531423207));
 			Anchor anchor2;
-			anchor2.type = DESCENDER;
+			anchor2.type = DESCEN;
 			anchor2.orientation = STRAIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(-81.35220844071671, -120), vec2(82.35220844071671, -120));
 			Anchor anchor3;
-			anchor3.type = ASCENDER;
-			anchor3.orientation = RIGHTANCHOR;
+			anchor3.type = ASCEND;
+			anchor3.orientation = RIGHT;
 			anchor3.cutting = std::pair<vec2, vec2>(vec2(81.35220844071671, 43.80503531423207), vec2(115, -42));
 			anchors = { anchor1, anchor2, anchor3 };
 			break;
 		}
 		case 'S': {
 			Anchor anchor1;
-			anchor1.type = ASCENDER;
-			anchor1.orientation = RIGHTANCHOR;
+			anchor1.type = ASCEND;
+			anchor1.orientation = RIGHT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(0, 108), vec2(0, 218));
 			Anchor anchor2;
-			anchor2.type = DESCENDER;
-			anchor2.orientation = LEFTANCHOR;
+			anchor2.type = DESCEN;
+			anchor2.orientation = LEFT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(34.302998766882766, -81.11650296639337), vec2(180, -81.11650296639337));
 			anchors = { anchor1, anchor2 };
 			break;
 		}
 		case 'T': {
 			Anchor anchor1;
-			anchor1.type = ASCENDER;
+			anchor1.type = ASCEND;
 			anchor1.orientation = STRAIGHT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-75.99049008378304, 62.629524794326684), vec2(75.99049008378304, 62.629524794326684));
 			Anchor anchor2;
-			anchor2.type = DESCENDER;
+			anchor2.type = DESCEN;
 			anchor2.orientation = STRAIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(-75.99049008378304, -163.6718247958404), vec2(75.99049008378304, -163.6718247958404));
 			anchors = { anchor1, anchor2 };
@@ -654,11 +654,11 @@ void Letter::generateAnchorPoints(char letter) {
 		}
 		case 'U': {
 			Anchor anchor1;
-			anchor1.type = ASCENDER;
+			anchor1.type = ASCEND;
 			anchor1.orientation = STRAIGHT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-202.99642156898068, 75), vec2(-67.6654738563269, 75));
 			Anchor anchor2;
-			anchor2.type = ASCENDER;
+			anchor2.type = ASCEND;
 			anchor2.orientation = STRAIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(67.6654738563269, 75), vec2(202.99642156898068, 75));
 			anchors = { anchor1, anchor2 };
@@ -666,60 +666,60 @@ void Letter::generateAnchorPoints(char letter) {
 		}
 		case 'V': {
 			Anchor anchor1;
-			anchor1.type = ASCENDER;
-			anchor1.orientation = LEFTANCHOR;
+			anchor1.type = ASCEND;
+			anchor1.orientation = LEFT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-102.05333219156785, 28.33534957011929), vec2(0.0, 82.93273044912962));
 			Anchor anchor2;
-			anchor2.type = ASCENDER;
-			anchor2.orientation = RIGHTANCHOR;
+			anchor2.type = ASCEND;
+			anchor2.orientation = RIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(0.0, 82.93273044912962), vec2(101.82296349587585, 28.33534957011929));
 			anchors = { anchor1, anchor2 };
 			break;
 		}
 		case 'W': {
 			Anchor anchor1;
-			anchor1.type = ASCENDER;
-			anchor1.orientation = LEFTANCHOR;
+			anchor1.type = ASCEND;
+			anchor1.orientation = LEFT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-150, -180), vec2(-100.89710795878223, -79.94579592362525));
 			Anchor anchor2;
-			anchor2.type = ASCENDER;
-			anchor2.orientation = RIGHTANCHOR;
+			anchor2.type = ASCEND;
+			anchor2.orientation = RIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(100.89710795878223, -79.94579592362525), vec2(150, -180));
 			anchors = { anchor1, anchor2 };
 			break;
 		}
 		case 'X': {
 			Anchor anchor1;
-			anchor1.type = ASCENDER;
-			anchor1.orientation = LEFTANCHOR;
+			anchor1.type = ASCEND;
+			anchor1.orientation = LEFT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-74.55850590152491, 0.0), vec2(0.0, 83.63519357649315));
 			Anchor anchor2;
-			anchor2.type = ASCENDER;
-			anchor2.orientation = RIGHTANCHOR;
+			anchor2.type = ASCEND;
+			anchor2.orientation = RIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(0.0, 83.63519357649315), vec2(74.55850590152491, 0.0));
 			Anchor anchor3;
-			anchor3.type = DESCENDER;
-			anchor3.orientation = LEFTANCHOR;
+			anchor3.type = DESCEN;
+			anchor3.orientation = LEFT;
 			anchor3.cutting = std::pair<vec2, vec2>(vec2(-74.55850590152491, 0.0), vec2(0.0, -81.69018907471424));
 			Anchor anchor4;
-			anchor4.type = DESCENDER;
-			anchor4.orientation = RIGHTANCHOR;
+			anchor4.type = DESCEN;
+			anchor4.orientation = RIGHT;
 			anchor4.cutting = std::pair<vec2, vec2>(vec2(0.0, -81.69018907471424), vec2(74.55850590152491, 0.0));
 			anchors = { anchor1, anchor2, anchor3, anchor4 };
 			break;
 		}
 		case 'Y': {
 			Anchor anchor1;
-			anchor1.type = ASCENDER;
-			anchor1.orientation = LEFTANCHOR;
+			anchor1.type = ASCEND;
+			anchor1.orientation = LEFT;
 			anchor1.cutting = std::pair<vec2, vec2>(vec2(-54.44246704477297, -49.49315185888452), vec2(0.0, 49.49315185888452));
 			Anchor anchor2;
-			anchor2.type = ASCENDER;
-			anchor2.orientation = RIGHTANCHOR;
+			anchor2.type = ASCEND;
+			anchor2.orientation = RIGHT;
 			anchor2.cutting = std::pair<vec2, vec2>(vec2(0.0, 49.49315185888452), vec2(110, 49.49315185888452));
 			Anchor anchor3;
-			anchor3.type = DESCENDER;
-			anchor3.orientation = LEFTANCHOR;
+			anchor3.type = DESCEN;
+			anchor3.orientation = LEFT;
 			anchor3.cutting = std::pair<vec2, vec2>(vec2(-54.44246704477297, -49.49315185888452), vec2(57, -49.49315185888452));
 			anchors = { anchor1, anchor2, anchor3 };
 			break;
