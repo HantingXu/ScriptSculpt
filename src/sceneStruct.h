@@ -14,3 +14,12 @@ struct Protrusion
 	//the position on the centerline
 	int projection;
 };
+
+struct ImgShape
+{
+	std::vector<cv::Point> centerline;
+	std::vector<cv::Point> contour;
+	std::vector<Protrusion> protrusions;
+};
+
+

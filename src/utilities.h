@@ -1,6 +1,7 @@
 #pragma once
 #include <opencv2/opencv.hpp>
 #include "sceneStruct.h"
+#include <Eigen/Dense>
 
 namespace utilityCore
 {
@@ -15,5 +16,6 @@ namespace utilityCore
 	extern void genGraph(const std::vector<cv::Point>& endpoints, const std::vector<int>& distances, std::vector<std::vector<cv::Vec3i>>& graph);
 	extern void genSkeleton(const cv::Mat& img, std::vector<cv::Point>& centerline);
 	extern void processProtrusions(const std::vector<cv::Point>& centerline, std::vector<Protrusion>& protrustions);
+	extern void subdivide(const int number, const std::vector<cv::Point>& centerline, std::vector<int>& midPoints, std::vector<Eigen::Vector2f>& normals);
 }
 
