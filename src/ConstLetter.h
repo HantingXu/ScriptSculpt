@@ -40,7 +40,7 @@ public:
 	void setRotate(float angle);
 	void setTranslate(float x, float y);
 
-	void getContour();
+	int getContour(cv::Mat& img, bool computeArea);
 	friend class ConstLetters;
 	friend class LetterAlignment;
 };

@@ -5,6 +5,7 @@
 #include "utilities.h"
 #include "ConstLetter.h"
 #include "LetterAlignment.h"
+#include "sceneStruct.h"
 using namespace cv;
 using Eigen::MatrixXd;
 
@@ -15,19 +16,22 @@ using Eigen::MatrixXd;
  */
 int main()
 {
-#define thinning 0
+#define thinning 1
 #if thinning
     cv::Mat src = cv::imread("../img/bunny.jpg");
     cv::Mat gray;
     cv::cvtColor(src, gray, COLOR_BGR2GRAY);
     cv::threshold(gray, gray, 170, 255, THRESH_BINARY_INV);
+    ImgShape imgShape;
+    imgShape.grayScale = gray;
 
     //extract contour
     std::vector<Point> contour;
     cv::Mat contourImg = cv::Mat::zeros(gray.size(), gray.type());
     utilityCore::extractContour(gray, contourImg, contour);
-    int shapeArea = cv::contourArea(contour);
-    cv::imshow("contour", contourImg);
+    imgShape.contour = contour;
+    imgShape.area = cv::contourArea(contour);
+    //cv::imshow("contour", contourImg);
 
     //extract protrusions
     cv::Mat mask;
@@ -58,19 +62,21 @@ int main()
         cv::circle(skeletonImg, centerline[j], 3, 255, 1);
         std::cout << centerline[j] << std::endl;
     }
-    cv::imshow("skeleton", skeletonImg);
+    //cv::imshow("skeleton", skeletonImg);
+    imgShape.centerline = centerline;
 
     //compute protrusion poisition on centerline
     utilityCore::processProtrusions(centerline, protrusions);
-    
-    //for (int j = 0; j < protrusions.size(); j++)
-    //{
+    imgShape.protrusions = protrusions;
+    /*
+    for (int j = 0; j < protrusions.size(); j++)
+    {
         //cv::line(protruImg, protrusions[j].start, protrusions[j].end, 155, 2);
         //std::cout << protrusions[j].projection << std::endl;
         //if (protrusions[j].orientation == 0)
         //cv::circle(protruImg, centerline[protrusions[j].projection], 4, 200, -1);
-        //std::cout << protrusions[j].orientation << std::endl;
-    //}
+        std::cout << protrusions[j].type << std::endl;
+    }
     //cv::imshow("protrusions", protruImg);
 
     int numLetter = 5;
@@ -83,10 +89,10 @@ int main()
         cv::circle(protruImg, centerline[midPoints[i]], 4, 200, -1);
         cv::line(protruImg, centerline[midPoints[i]], Point(normals[i][0] * 14.0f, normals[i][1] * 14.0f) + centerline[midPoints[i]], 155, 1);
     }
-    cv::imshow("protrusions", protruImg);
+    cv::imshow("protrusions", protruImg);*/
     cv::waitKey();
 #endif
-#define bezier 1
+#define bezier 0
 #if bezier
     // Create a black image
     cv::Mat image(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
