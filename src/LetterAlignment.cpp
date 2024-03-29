@@ -7,7 +7,7 @@ LetterAlignment::LetterAlignment(std::vector<Letter>& letters, ImgShape& shape) 
 
 float LetterAlignment::orientationComp(const Anchor& anchor, const Protrusion& protrusion) {
 	int anchorType = anchor.type;
-	int protrusionType;
+	int protrusionType = protrusion.type;
 	int anchorOri = anchor.orientation;
 	int protusionOri = protrusion.orientation;
 	if (anchorType != protrusionType) {

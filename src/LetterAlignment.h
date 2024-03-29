@@ -9,7 +9,7 @@ private:
 	ImgShape shape;
 public:
 	LetterAlignment(std::vector<Letter>& letters, ImgShape &shape);
-	float positionalComp(const vec3& letter, const vec3& protrusion, int pathLength, int wordLength);
+	float positionalComp(const vec2& letter, const vec2& protrusion, int pathLength, int wordLength);
 	float orientationComp(const Anchor& anchor, const Protrusion& protrusion);
 	void initialAlignment();
 	void refinedAlignment();
