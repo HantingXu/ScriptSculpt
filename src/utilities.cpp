@@ -474,7 +474,8 @@ void utilityCore::processProtrusions(const std::vector<cv::Point>& centerline, s
         int endIdx = findClosestPoint(centerline, protrustions[i].end);
         int midIdx = (startIdx + endIdx) / 2;
         protrustions[i].projection = midIdx;
-        protrustions[i].orientation = UP;
+        protrustions[i].orientation = STRAIGHT;
+        protrustions[i].type = ASCEND;
         int xSide = (protrustions[i].center.x - centerline[midIdx].x) * protrustions[i].axis[0];
         int ySide = (protrustions[i].center.y - centerline[midIdx].y) * protrustions[i].axis[1];
         if (ySide < 0.0f)
@@ -488,7 +489,10 @@ void utilityCore::processProtrusions(const std::vector<cv::Point>& centerline, s
                 protrustions[i].axis = -protrustions[i].axis;
         }
         if (protrustions[i].axis[1] > 0)
-            protrustions[i].orientation = DOWN;
+        {
+            protrustions[i].orientation = STRAIGHT;
+            protrustions[i].type = DESCEN;
+        }
         //std::cout << protrustions[i].axis << std::endl;
         // costheta
         float precursor = protrustions[i].axis.dot(mainAxis);
