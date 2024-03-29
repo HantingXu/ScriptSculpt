@@ -42,6 +42,7 @@ public:
 
 	void getContour();
 	friend class ConstLetters;
+	friend class LetterAlignment;
 };
 
 class ConstLetters {

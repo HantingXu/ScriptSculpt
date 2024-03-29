@@ -32,3 +32,15 @@ float LetterAlignment::orientationComp(const Anchor& anchor, const Protrusion& p
 		}
 	}
 }
+
+void LetterAlignment::initialAlignment() {
+	//utilityCore::subdivide(const int number, const std::vector<cv::Point>&centerline, std::vector<int>&midPoints, std::vector<Eigen::Vector2f>&normals)
+	//exhausitive search
+	for (const Letter& letter : letters) {
+		for (const Anchor& anchor : letter.anchors) {
+			for (const Protrusion& protrusion : shape.protrusions) {
+				//float P_loc = positionalComp(const vec2 & letter, const vec2 & protrusion, int pathLength, int wordLength);
+			}
+		}
+	}
+}
