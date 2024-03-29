@@ -77,10 +77,77 @@ void LetterAlignment::initialAlignment() {
 		}
 		correspondence[protrusion] = corr;
 	}
-
 	//exhausitive search
 	std::vector<float> sums;
 	std::vector<std::map<Protrusion, Correspondence>&> correspondences;
 	std::map<Protrusion, Correspondence> currCor;
 	findSums(correspondence, 0, 0, currCor, sums, correspondences);
+}
+
+float LetterAlignment::aspectRatioScore(std::vector<Letter>& refinedLetters)
+{
+	float totScore = 0.0f;
+	for (int i = 0; i < refinedLetters.size(); i++)
+	{
+		totScore += log(abs(refinedLetters[i].transform.scale[1] / refinedLetters[i].transform.scale[0]));
+	}
+	return totScore / refinedLetters.size();
+}
+
+float LetterAlignment::fitScore()
+{
+	float totScore = 0.0f;
+	cv::Mat canvas = cv::Mat::zeros(shape.grayScale.size(), cv::COLOR_BGR2GRAY);
+	for (int i = 0; i < letters.size(); i++)
+	{
+		letters[i].getContour(canvas, false);
+	}
+	cv::bitwise_and(canvas, shape.grayScale, canvas);
+	float B = cv::countNonZero(canvas);
+	//float A = shape.area - B;
+	// B-A negative
+	return abs(log(shape.area / B));
+}
+
+float LetterAlignment::smoothFlowScore()
+{
+	int N = letters.size();
+	float totScore = 0.0f;
+	std::vector<float> areas;
+	std::vector<float> orientations;
+	float avgArea = 0.0f;
+	float avgOrient = 0.0f;
+	float overlap = 0.0f;
+	cv::Mat canvas = cv::Mat::zeros(shape.grayScale.size(), cv::COLOR_BGR2GRAY);
+
+	for (int i = 0; i < N; i++)
+	{
+		areas.push_back(letters[i].boundingArea * letters[i].transform.scale[0] * letters[i].transform.scale[1]);
+		orientations.push_back(letters[i].transform.ori);
+		letters[i].getContour(canvas, false);
+		overlap += areas[i];
+		avgOrient += orientations[i];
+	}
+	avgArea = overlap;
+	float cover = cv::countNonZero(canvas);
+	//is it really nessisary to /shape.area?
+	overlap = (overlap - cover) / (float)shape.area;
+	avgArea /= (float)N;
+	avgOrient /= (float)N;
+	totScore += overlap;
+
+	float varArea = 0.0f;
+	float varOrient = 0.0f;
+	for (int i = 0; i < N; i++)
+	{
+		varArea = pow(areas[i] - avgArea, 2);
+		varOrient = pow(orientations[i] - avgOrient, 2);
+	}
+	totScore += (sqrtf(varArea / (float)N) + sqrtf(varOrient / (float)N));
+	return totScore;
+}
+
+void LetterAlignment::refinedAlignment()
+{
+
 }
