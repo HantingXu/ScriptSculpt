@@ -27,6 +27,7 @@ struct Protrusion
 struct ImgShape
 {
 	int area;
+	cv::Mat grayScale;
 	std::vector<cv::Point> centerline;
 	std::vector<cv::Point> contour;
 	std::vector<Protrusion> protrusions;
