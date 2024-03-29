@@ -732,7 +732,87 @@ void Letter::generateAnchorPoints(char letter) {
 }
 
 void Letter::generateArea(char letter) {
-	float area = 160000.f; //base area
+	float area = 160000.f; //bounding box area
+	switch (letter) {
+		case 'A': {
+			area = 160774.f;
+		}
+		case 'B': {
+			area = 121868.f;
+		}
+		case 'C': {
+			area = 102161.f;
+		}
+		case 'D': {
+			area = 121909.f;
+		}
+		case 'E':{
+			area = 120725.f;
+		}
+		case 'F': {
+			area = 98010.f;
+		}
+		case 'G': {
+			area = 142384.f;
+		}
+		case 'H': {
+			area = 94278.f;
+		}
+		case 'I': {
+			area = 121724.f;
+		}
+		case 'J': {
+			area = 125938.f;
+		}
+		case 'K': {
+			area = 82824.f;
+		}
+		case 'L': {
+			area = 151036.f;
+		}
+		case 'M': {
+			area = 111033.f;
+		}
+		case 'N': {
+			area = 115966.f;
+		}
+		case 'O': {
+			area = 148686.f;
+		}
+		case 'P': {
+			area = 127933.f;
+		}
+		case 'Q': {
+			area = 127635.f;
+		}
+		case 'R': {
+			area = 99546.f;
+		}
+		case 'S': {
+			area = 104377.f;
+		}
+		case 'T': {
+			area = 101232.f;
+		}
+		case 'U': {
+			area = 111762.f;
+		}
+		case 'V': {
+			area = 78736.f;
+		}
+		case 'W': {
+			area = 85629.f;
+		}
+		case 'X': {
+			area = 87847.f;
+		}
+		case 'Y': {
+			area = 69133.f;
+		}
+		case 'Z': {
+			area = 105530.f;
+		}
+	}
 	this->boundingArea = area;
 }
 
