@@ -1,9 +1,17 @@
 #pragma once
 #include <opencv2/opencv.hpp>
-#define UP 0
+#include <Eigen/Dense>
+
+#define STRAIGHT 0
 #define RIGHT 1
-#define DOWN 2
-#define LEFT 3
+#define LEFT 2
+#define ASCEND 0
+#define DESCEN 1
+
+using vec2 = Eigen::Vector2f;
+using vec3 = Eigen::Vector3f;
+using mat3 = Eigen::Matrix3f;
+
 struct Protrusion
 {
 	cv::Point start;
@@ -11,6 +19,7 @@ struct Protrusion
 	cv::Vec2f axis;
 	cv::Point center;
 	int orientation;
+	int type;
 	//the position on the centerline
 	int projection;
 };
