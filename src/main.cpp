@@ -86,7 +86,7 @@ int main()
     cv::imshow("protrusions", protruImg);
     cv::waitKey();
 #endif
-#define bezier 1
+#define bezier 0
 #if bezier
     // Create a black image
     cv::Mat image(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
@@ -119,6 +119,24 @@ int main()
     // Display the image
     cv::imshow("Bezier Curve", image);
     cv::waitKey(0);
+#endif
+#define initial 1
+#if initial
+    ConstLetters l = ConstLetters();
+    std::vector<Letter> letters;
+    Letter b = l.getLetter('B');
+    Letter u = l.getLetter('U');
+    Letter n1 = l.getLetter('N');
+    Letter n2 = l.getLetter('N');
+    Letter y = l.getLetter('Y');
+    letters.push_back(b);
+    letters.push_back(u);
+    letters.push_back(n1);
+    letters.push_back(n2);
+    letters.push_back(y);
+    ImgShape img;
+    LetterAlignment align = LetterAlignment(letters, img);
+    align.initialAlignment();
 #endif
     return 0;
 }
