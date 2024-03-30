@@ -9,6 +9,11 @@ Before Cmake, please download opencv 4.80 and set the opencv lib directory as Op
     * Initial Placement
         * First position letters that have a match with protrusion.
         * Then position other letters, keeping them as evenly spaced as possible.
+        
+- **Refined Alignment** (Week of Mar 25th)
+![](./visualization/initial/refinedAlignment.png)
+    * Using GA, find the best alignment that minimize the combined layout energy.
+    * No control point deformation so far.
 
 ## Alpha Version Visualization
 - **Bezier Curve Representation of English letters** (Week of Mar 11th)

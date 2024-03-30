@@ -155,6 +155,8 @@ int main()
         align.letters[i].drawBezierCurve(contourImg);
     }
     cv::imshow("Bezier Curve", contourImg);*/
+
+    //std::cout << align.smoothFlowScore() << std::endl;
     
     utilityCore::solveGA(align);
 

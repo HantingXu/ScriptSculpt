@@ -1020,6 +1020,7 @@ int Letter::getContour(cv::Mat& img, bool computeArea) {
 		}
 	}
 	cv::drawContours(img, letter, -1, 255, -1);
+	cv::imshow("test", img);
 	
 	int area = 0;
 	if (computeArea)
@@ -1030,9 +1031,12 @@ int Letter::getContour(cv::Mat& img, bool computeArea) {
 			area += cv::contourArea(letter[i]);
 		}
 		**/
-		area = cv::countNonZero(img);
+		//area = cv::countNonZero(img);
+		cv::Mat im = cv::Mat::zeros(img.size(), img.type());
+		cv::drawContours(im, letter, -1, 255, -1);
+		area = cv::countNonZero(im);
 	}
-	cv::imshow("test", img);
+	//cv::imshow("test", img);
 	//cv::imshow("test", img);
 	return area;
 	

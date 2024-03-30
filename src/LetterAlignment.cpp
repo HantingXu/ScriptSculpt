@@ -90,6 +90,7 @@ void LetterAlignment::initialAlignment() {
 	size_t index = std::distance(sums.begin(), minIt);
 	std::vector<Correspondence> bestCorrespondence = correspondences[index];
 	std::vector<Protrusion*> perLetter(letters.size(), nullptr);
+	std::vector<Correspondence> perLetterCor(letters.size());
 	for (int i = 0; i < letters.size(); i++) {
 		float bestScore = INFINITY;
 		for (int j = 0; j < bestCorrespondence.size(); j++) {
@@ -98,6 +99,7 @@ void LetterAlignment::initialAlignment() {
 				if (currScore < bestScore) {
 					currScore = bestScore;
 					perLetter[i] = &shape.protrusions[j];
+					perLetterCor[i] = bestCorrespondence[j];
 				}
 			}
 		}
@@ -117,12 +119,24 @@ void LetterAlignment::initialAlignment() {
 		bool hasCor = processed[i];
 		//float scale = shape.area / (2 * letters[i].boundingArea);
 		//std::cout << letters[i].boundingArea << std::endl;
-		letters[i].setScale(0.08f, 0.08f);
+		float scale = 0.08f;
+		letters[i].setScale(scale, scale);
 
 		if (hasCor) {
 			Protrusion protrusion = *perLetter[i];
 			vec2 protrusionPos = vec2(shape.centerline[protrusion.projection].x, shape.centerline[protrusion.projection].y);
-			letters[i].setTranslate(protrusionPos.x(), protrusionPos.y());
+			vec2 p1 = vec2(protrusion.start.x, protrusion.start.y);
+			vec2 p2 = vec2(protrusion.end.x, protrusion.end.y);
+			vec2 protrusionCtr = (p1 + p2) / 2.f;
+			vec2 anchorPos;
+			for (Anchor& anchor : letters[i].anchors) {
+				if (anchor.cutting.first == perLetterCor[i].anchor.cutting.first && anchor.cutting.second == perLetterCor[i].anchor.cutting.second) {
+					anchorPos = scale * (anchor.cutting.first + anchor.cutting.second)/2.f;
+				}
+			}
+			vec2 delta = protrusionCtr - anchorPos;
+			letters[i].setTranslate(delta.x(), delta.y());
+			//letters[i].setTranslate(protrusionPos.x(), protrusionPos.y());
 			locations.push_back(protrusion.projection);
 			vec2 axis = vec2(protrusion.axis[0], protrusion.axis[1]);
 			axis.normalize();
@@ -207,7 +221,7 @@ float LetterAlignment::aspectRatioScore()
 	{
 		totScore += log(abs(letters[i].transform.scale[1] / letters[i].transform.scale[0]));
 	}
-	return totScore / letters.size();
+	return abs(totScore) / letters.size();
 }
 
 float LetterAlignment::fitScore()
@@ -238,9 +252,10 @@ float LetterAlignment::smoothFlowScore()
 
 	for (int i = 0; i < N; i++)
 	{
-		areas.push_back(letters[i].boundingArea * letters[i].transform.scale[0] * letters[i].transform.scale[1]);
-		orientations.push_back(letters[i].transform.ori);
-		letters[i].getContour(canvas, false);
+		//areas.push_back(letters[i].boundingArea * letters[i].transform.scale[0] * letters[i].transform.scale[1]);
+		orientations.push_back(letters[i].transform.ori * TORADIAN);
+		float area = letters[i].getContour(canvas, true);
+		areas.push_back(area);
 		overlap += areas[i];
 		avgOrient += orientations[i];
 	}
@@ -270,7 +285,9 @@ float LetterAlignment::smoothFlowScore()
 
 float LetterAlignment::refinedAlignment()
 {
-	return 0.4f * aspectRatioScore() + fitScore() + 0.6f * smoothFlowScore();
+	std::cout << 0.4f * aspectRatioScore() + 0.4f * fitScore() + 1.f * smoothFlowScore() << std::endl;
+	return 0.4f * aspectRatioScore() + 0.4f * fitScore() + 1.f * smoothFlowScore();
+	//return smoothFlowScore();
 }
 
 void LetterAlignment::setLetters(const GASolution& sol)
