@@ -129,9 +129,14 @@ void LetterAlignment::initialAlignment() {
 			vec2 p2 = vec2(protrusion.end.x, protrusion.end.y);
 			vec2 protrusionCtr = (p1 + p2) / 2.f;
 			vec2 anchorPos;
+			float sign = 1;
 			for (Anchor& anchor : letters[i].anchors) {
 				if (anchor.cutting.first == perLetterCor[i].anchor.cutting.first && anchor.cutting.second == perLetterCor[i].anchor.cutting.second) {
 					anchorPos = scale * (anchor.cutting.first + anchor.cutting.second)/2.f;
+					int protrusionOri = protrusion.orientation;
+					if ((anchor.orientation == LEFT && protrusionOri == RIGHT)||(anchor.orientation == RIGHT && protrusionOri == LEFT)) {
+						sign = -1;
+					}
 				}
 			}
 			vec2 delta = protrusionCtr - anchorPos;
@@ -147,8 +152,10 @@ void LetterAlignment::initialAlignment() {
 			else {
 				rad = acosf(axis.dot(vec2(0, 1)));
 			}
+			rad *= sign;
 
 			letters[i].setRotate(rad * 180.f / M_PI );
+			std::cout << rad * 180.f / M_PI << std::endl;
 		}
 		else {
 			locations.push_back(-1);
@@ -163,9 +170,8 @@ void LetterAlignment::initialAlignment() {
 	std::vector<int> indices;
 	for (int i = 0; i < locations.size(); i++) {
 		if (locations[i] == -1) {
-			if (i == 0 || i == locations.size() - 1) {
-				int loc = (i == 0) ? 0 : shape.centerline.size() - 1;
-				locations[i] = loc;
+			if (i == 0) {
+				locations[i] = 0;
 				indices.push_back(i);
 			}
 			else {
@@ -183,13 +189,27 @@ void LetterAlignment::initialAlignment() {
 				int length = end - start;
 				int num = endIdx - startIdx - 1;
 				int space = length / (num + 1);
+				int count = 1;
 				for (int j = startIdx + 1; j < endIdx; j++){
-					locations[j] = start + space;
+					locations[j] = start + count * space;
 					indices.push_back(j);
-					space += space;
+					count++;
 				}
 				isCounting = false;
 			}
+		}
+	}
+	if (isCounting) {
+		end = midPoints.size() - 1;
+		endIdx = locations.size() - 1;
+		int length = end - start;
+		int num = endIdx - startIdx - 1;
+		int space = length / (num + 1);
+		int count = 1;
+		for (int j = startIdx + 1; j < endIdx; j++) {
+			locations[j] = start + count * space;
+			indices.push_back(j);
+			count++;
 		}
 	}
 	for (int i = 0; i < indices.size(); i++) {
