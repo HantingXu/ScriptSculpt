@@ -49,6 +49,8 @@ set(headers
     src/ConstLetter.h
     src/sceneStruct.h
     src/LetterAlignment.h
+    src/openGA.hpp
+    src/GASolver.h
     )
 
 set(sources
@@ -57,6 +59,7 @@ set(sources
     src/ConstLetter.cpp
     src/trace_skeleton.cpp
     src/LetterAlignment.cpp
+    src/GASolver.cpp
     )
 
 list(SORT headers)
