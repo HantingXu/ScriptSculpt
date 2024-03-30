@@ -1,6 +1,8 @@
 #pragma once
 #include <opencv2/opencv.hpp>
 #include "sceneStruct.h"
+#include "LetterAlignment.h"
+#include "GASolver.h"
 #include <Eigen/Dense>
 
 namespace utilityCore
@@ -17,5 +19,6 @@ namespace utilityCore
 	extern void genSkeleton(const cv::Mat& img, std::vector<cv::Point>& centerline);
 	extern void processProtrusions(const std::vector<cv::Point>& centerline, std::vector<Protrusion>& protrustions);
 	extern void subdivide(const int number, const std::vector<cv::Point>& centerline, std::vector<int>& midPoints, std::vector<Eigen::Vector2f>& normals);
+	extern void solveGA(LetterAlignment& letterAlign);
 }
 
