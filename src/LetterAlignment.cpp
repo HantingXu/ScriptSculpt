@@ -200,27 +200,26 @@ void LetterAlignment::initialAlignment() {
 }
 
 
-float LetterAlignment::aspectRatioScore(std::vector<Letter>& refinedLetters)
+float LetterAlignment::aspectRatioScore()
 {
 	float totScore = 0.0f;
-	for (int i = 0; i < refinedLetters.size(); i++)
+	for (int i = 0; i < letters.size(); i++)
 	{
-		totScore += log(abs(refinedLetters[i].transform.scale[1] / refinedLetters[i].transform.scale[0]));
+		totScore += log(abs(letters[i].transform.scale[1] / letters[i].transform.scale[0]));
 	}
-	return totScore / refinedLetters.size();
+	return totScore / letters.size();
 }
 
 float LetterAlignment::fitScore()
 {
 	float totScore = 0.0f;
-	cv::Mat canvas = cv::Mat::zeros(shape.grayScale.size(), cv::COLOR_BGR2GRAY);
+	cv::Mat canvas = cv::Mat::zeros(shape.grayScale.size(), shape.grayScale.type());
 	for (int i = 0; i < letters.size(); i++)
 	{
 		letters[i].getContour(canvas, false);
 	}
 	cv::bitwise_and(canvas, shape.grayScale, canvas);
 	float B = cv::countNonZero(canvas);
-	//float A = shape.area - B;
 	// B-A negative
 	return abs(log(shape.area / B));
 }
@@ -232,6 +231,7 @@ float LetterAlignment::smoothFlowScore()
 	std::vector<float> areas;
 	std::vector<float> orientations;
 	float avgArea = 0.0f;
+	float areaDenom = N / (float)shape.area;
 	float avgOrient = 0.0f;
 	float overlap = 0.0f;
 	cv::Mat canvas = cv::Mat::zeros(shape.grayScale.size(), cv::COLOR_BGR2GRAY);
@@ -256,14 +256,38 @@ float LetterAlignment::smoothFlowScore()
 	float varOrient = 0.0f;
 	for (int i = 0; i < N; i++)
 	{
-		varArea = pow(areas[i] - avgArea, 2);
+		varArea = pow((areas[i] - avgArea) * areaDenom, 2);
 		varOrient = pow(orientations[i] - avgOrient, 2);
 	}
+	/*
+	std::cout << "area:" << sqrtf(varArea / (float)N) << std::endl;
+	std::cout <<"oriant: " << sqrtf(varOrient / (float)N) << std::endl;
+	std::cout << "overlap: " << overlap << std::endl;*/
 	totScore += (sqrtf(varArea / (float)N) + sqrtf(varOrient / (float)N));
 	return totScore;
 }
 
-void LetterAlignment::refinedAlignment()
-{
 
+float LetterAlignment::refinedAlignment()
+{
+	return 0.4f * aspectRatioScore() + fitScore() + 0.6f * smoothFlowScore();
+}
+
+void LetterAlignment::setLetters(const GASolution& sol)
+{
+	for (int i = 0; i < letters.size(); i++)
+	{
+		letters[i].transform.ori = sol.var[i * 3] * TODEGREE;
+		letters[i].transform.scale = vec2(sol.var[i * 3 + 1], sol.var[i * 3 + 2]);
+	}
+}
+
+void LetterAlignment::setGASolution(GASolution& sol)
+{
+	for (int i = 0; i < letters.size(); i++)
+	{
+		sol.var[i * 3] = letters[i].transform.ori * TORADIAN;
+		sol.var[i * 3 + 1] = letters[i].transform.scale[0];
+		sol.var[i * 3 + 2] = letters[i].transform.scale[1];
+	}
 }

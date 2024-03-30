@@ -6,6 +6,7 @@
 #include "ConstLetter.h"
 #include "LetterAlignment.h"
 #include "sceneStruct.h"
+#include "GASolver.h"
 using namespace cv;
 using Eigen::MatrixXd;
 
@@ -149,10 +150,55 @@ int main()
     //ImgShape img;
     LetterAlignment align = LetterAlignment(letters, imgShape);
     align.initialAlignment();
+    /*
     for (int i = 0; i < align.letters.size(); i++) {
         align.letters[i].drawBezierCurve(contourImg);
     }
-    cv::imshow("Bezier Curve", contourImg);
+    cv::imshow("Bezier Curve", contourImg);*/
+    
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+    using std::placeholders::_3;
+    GASolver solver = GASolver(&align);
+
+    GA_Type ga_obj;
+    ga_obj.problem_mode = EA::GA_MODE::SOGA;
+    ga_obj.multi_threading = false;
+    ga_obj.idle_delay_us = 1; // switch between threads quickly
+    ga_obj.verbose = false;
+    ga_obj.population = 20;
+    ga_obj.generation_max = 1000;
+    ga_obj.calculate_SO_total_fitness = std::bind(&GASolver::calculateSOTotalFitness, &solver, _1);
+    ga_obj.init_genes = std::bind(&GASolver::initGenes, &solver, _1, _2);
+    ga_obj.eval_solution = std::bind(&GASolver::evalSolution, &solver, _1, _2);
+    ga_obj.mutate = std::bind(&GASolver::mutate, &solver, _1, _2, _3);
+    ga_obj.crossover = std::bind(&GASolver::crossover, &solver, _1, _2, _3);
+    ga_obj.SO_report_generation = std::bind(&GASolver::SOReportGeneration, &solver, _1, _2, _3);
+    ga_obj.best_stall_max = 10;
+    ga_obj.elite_count = 10;
+    ga_obj.crossover_fraction = 0.7;
+    ga_obj.mutation_rate = 0.4;
+    ga_obj.solve();
+
+    int i = ga_obj.last_generation.best_chromosome_index;
+    std::cout << ga_obj.last_generation.chromosomes[i].genes.to_string() << std::endl;
+    align.setLetters(ga_obj.last_generation.chromosomes[i].genes);
+    /*
+    GASolution ga;
+    for (int i = 0; i < 10; i++)
+    {
+        ga.var[i * 3] = 0.2f;
+        ga.var[i * 3 + 1] = 0.3f;
+        ga.var[i * 3 + 2] = 0.3f;
+    }
+    align.setLetters(ga);*/
+    std::cout << align.smoothFlowScore() << std::endl;
+    for (int i = 0; i < align.letters.size(); i++)
+    {
+        align.letters[i].drawBezierCurve(contourImg);
+    }
+    cv::imshow("Bezier Curvee", contourImg);
+
     cv::waitKey(0);
 #endif
     return 0;

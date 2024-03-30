@@ -3,6 +3,7 @@
 #include "utilities.h"
 #include <opencv2/opencv.hpp>
 #include <vector>
+#include "sceneStruct.h"
 
 struct Correspondence {
 	Anchor anchor;
@@ -26,10 +27,13 @@ public:
 	float positionalComp(const vec2& letter, const vec2& protrusion, int pathLength, int wordLength);
 	float orientationComp(const Anchor& anchor, const Protrusion& protrusion);
 
-	float aspectRatioScore(std::vector<Letter>& refinedLetters);
+	float aspectRatioScore();
 	float fitScore();
 	float smoothFlowScore();
 
 	void initialAlignment();
-	void refinedAlignment();
+	float refinedAlignment();
+
+	void setLetters(const GASolution& sol);
+	void setGASolution(GASolution& sol);
 };
