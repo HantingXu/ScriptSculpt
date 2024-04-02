@@ -131,6 +131,8 @@ int main()
 #if initial
     ConstLetters l = ConstLetters();
     std::vector<Letter> letters;
+
+    cv::Mat image(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
     Letter l1 = l.getLetter('B');
     Letter l2 = l.getLetter('U');
     Letter l3 = l.getLetter('N');
@@ -144,6 +146,14 @@ int main()
     letters.push_back(l3);
     letters.push_back(l4);
     letters.push_back(l5);
+
+    l3.setTranslate(400, 400);
+    //l3.split();
+    //l3.setScale(0.25, 0.25);
+    l3.drawBezierCurve(image);
+    l3.drawControlPoints(image);
+    l3.drawNormal(image);
+
     //letters.push_back(l6);
     //letters.push_back(l7);
     //letters.push_back(l8);
@@ -158,13 +168,16 @@ int main()
 
     //std::cout << align.smoothFlowScore() << std::endl;
     
-    utilityCore::solveGA(align);
+    //utilityCore::solveGA(align);
 
+    /**
     for (int i = 0; i < align.letters.size(); i++)
     {
         align.letters[i].drawBezierCurve(contourImg);
+        align.letters[i].drawControlPoints(contourImg);
     }
-    cv::imshow("Bezier Curvee", contourImg);
+    **/
+    cv::imshow("Bezier Curvee", image);
 
     cv::waitKey(0);
 #endif

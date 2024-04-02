@@ -44,10 +44,10 @@ void Letter::generateControlPoints(char letter) {
 			vec2(51.70773584694285, -228.18848645498696), vec2(51.33304210892153, -228.18848645498696), vec2(50.9583483709002, -228.18848645498696), vec2(50.58365463287888, -228.18848645498696),
 			vec2(50.58365463287888, -228.18848645498696), vec2(50.58365463287888, -238.8672579885947), vec2(50.58365463287888, -249.54602952220247), vec2(50.58365463287888, -260.22480105581025),
 			vec2(50.58365463287888, -260.22480105581025), vec2(16.486524472938306, -260.22480105581025), vec2(-17.610605687002273, -260.22480105581025), vec2(-51.70773584694285, -260.22480105581025),
-			vec2(112.9701620134295, -51.145695239910864), vec2(71.37915709306242, -51.145695239910864), vec2(47.21141099068696, -80.93384741260621), vec2(47.21141099068696, -116.34240565562142),
-			vec2(47.21141099068696, -116.34240565562142), vec2(47.21141099068696, -152.8750451127006), vec2(71.37915709306242, -180.9770754643), vec2(112.9701620134295, -180.9770754643),
-			vec2(112.9701620134295, -180.9770754643), vec2(154.56116693379658, -180.9770754643), vec2(178.72891303617203, -152.8750451127006), vec2(178.72891303617203, -116.34240565562142),
-			vec2(178.72891303617203, -116.34240565562142), vec2(178.72891303617203, -80.93384741260621), vec2(154.56116693379658, -51.145695239910864), vec2(112.9701620134295, -51.145695239910864)
+			//vec2(112.9701620134295, -51.145695239910864), vec2(71.37915709306242, -51.145695239910864), vec2(47.21141099068696, -80.93384741260621), vec2(47.21141099068696, -116.34240565562142)
+			//vec2(47.21141099068696, -116.34240565562142), vec2(47.21141099068696, -152.8750451127006), vec2(71.37915709306242, -180.9770754643), vec2(112.9701620134295, -180.9770754643),
+			//vec2(112.9701620134295, -180.9770754643), vec2(154.56116693379658, -180.9770754643), vec2(178.72891303617203, -152.8750451127006), vec2(178.72891303617203, -116.34240565562142),
+			//vec2(178.72891303617203, -116.34240565562142), vec2(178.72891303617203, -80.93384741260621), vec2(154.56116693379658, -51.145695239910864), vec2(112.9701620134295, -51.145695239910864)
 		};
 		break;
 	case 'C':
@@ -233,8 +233,7 @@ void Letter::generateControlPoints(char letter) {
 	case 'N':
 		points = {
 			vec2(-66.1099295981799, 185.25720384574706), vec2(-66.1099295981799, 168.82309705297916), vec2(-66.1099295981799, 152.3889902602113), vec2(-66.1099295981799, 135.9548834674434),
-			vec2(-66.1099295981799, 135.9548834674434), vec2(-65.61192636203542, 135.9548834674434), vec2(-65.11392312589093, 135.9548834674434), vec2(-64.61591988974645, 135.9548834674434),
-			vec2(-64.61591988974645, 135.9548834674434), vec2(-33.24171601264413, 182.26918442888018), vec2(4.855531552408693, 197.95628636743135), vec2(57.89287620179596, 197.95628636743135),
+			vec2(-66.1099295981799, 135.9548834674434), vec2(-33.24171601264413, 182.26918442888018), vec2(4.855531552408693, 197.95628636743135), vec2(57.89287620179596, 197.95628636743135),
 			vec2(57.89287620179596, 197.95628636743135), vec2(160.9795460837036, 197.95628636743135), vec2(202.0648130656233, 132.96686405057653), vec2(202.0648130656233, 38.844252419269544),
 			vec2(202.0648130656233, 38.844252419269544), vec2(202.0648130656233, -40.08926050963074), vec2(202.0648130656233, -119.02277343853103), vec2(202.0648130656233, -197.95628636743135),
 			vec2(202.0648130656233, -197.95628636743135), vec2(156.74651857647552, -197.95628636743135), vec2(111.42822408732772, -197.95628636743135), vec2(66.1099295981799, -197.95628636743135),
@@ -427,7 +426,24 @@ void Letter::generateControlPoints(char letter) {
 		};
 		break;
 	}
-	this->controlPoints = points;
+	for (int i = 0; i < points.size(); i++) {
+		if (i % 4 != 3) {
+			bool outline = (i % 4 == 0);
+			sPtr<ControlPoint> p = mkS<ControlPoint>(points[i], outline);
+			this->controlPoints.push_back(std::move(p));
+		}
+	}
+	for (int i = 0; i < controlPoints.size(); i++) {
+		int prevIdx = (i == 0) ? controlPoints.size() - 1 : i - 1;
+		int nextIdx = (i == controlPoints.size() - 1) ? 0 : i + 1;
+		ControlPoint* p = this->controlPoints[i].get();
+		p -> next = this->controlPoints[nextIdx].get();
+		p -> prev = this->controlPoints[prevIdx].get();
+	}
+	for (int i = 0; i < controlPoints.size(); i++) {
+		controlPoints[i]->normal = controlPoints[i]->getNormal();
+	}
+	this->start = this->controlPoints[0].get();
 }
 
 void Letter::generateAnchorPoints(char letter) {
@@ -887,6 +903,7 @@ std::vector<vec2> calculateBezierPoints(const std::vector<vec2>& controlPoints, 
 	return curvePoints;
 }
 
+/**
 void Letter::drawBezierCurve(cv::Mat& image) {
 	int canvasWidth = image.cols; // Width of the canvas
 	int canvasHeight = image.rows; // Height of the canvas
@@ -918,7 +935,36 @@ void Letter::drawBezierCurve(cv::Mat& image) {
 	//cv::line(image, cv::Point(canvasCenter.x, 0), cv::Point(canvasCenter.x, canvasHeight), cv::Scalar(0, 255, 0), 1);
 	//cv::line(image, cv::Point(0, canvasCenter.y), cv::Point(canvasWidth, canvasCenter.y), cv::Scalar(0, 255, 0), 1);
 }
+**/
 
+void Letter::drawBezierCurve(cv::Mat& image) {
+	ControlPoint* curr = start;
+	do {
+		{
+			std::vector<vec3> controlPointsTransformed;
+			for (int j = 0; j < 4; j++) {
+				vec3 point = vec3(curr->pos.x(), curr->pos.y(), 1.f);
+				controlPointsTransformed.push_back(this->getTransformMat() * point);
+				if (j != 3) curr = curr->next;
+			}
+			std::vector<vec2> points;
+			points.push_back(vec2(controlPointsTransformed[0].x(), controlPointsTransformed[0].y()));
+			points.push_back(vec2(controlPointsTransformed[1].x(), controlPointsTransformed[1].y()));
+			points.push_back(vec2(controlPointsTransformed[2].x(), controlPointsTransformed[2].y()));
+			points.push_back(vec2(controlPointsTransformed[3].x(), controlPointsTransformed[3].y()));
+			std::vector<vec2> curvePoints = calculateBezierPoints(points, 100);
+			//cv::Scalar color = cv::Scalar(rand() % 256, rand() % 256, rand() % 256);
+			cv::Scalar color = cv::Scalar(255, 255, 255);
+			for (size_t i = 0; i < curvePoints.size() - 1; ++i) {
+				cv::line(image,
+					cv::Point(curvePoints[i][0], curvePoints[i][1]),
+					cv::Point(curvePoints[i + 1][0], curvePoints[i + 1][1]),
+					color, 2);
+			}
+		}
+	} while (curr != start);
+}
+/**
 void Letter::drawAnchors(cv::Mat& image) {
 	int canvasWidth = 800; // Width of the canvas
 	int canvasHeight = 800; // Height of the canvas
@@ -932,14 +978,34 @@ void Letter::drawAnchors(cv::Mat& image) {
 			cv::Scalar(255, 255, 255), 2);
 	}
 }
+**/
 
 void Letter::drawControlPoints(cv::Mat& image) {
-	int canvasWidth = 800; // Width of the canvas
-	int canvasHeight = 800; // Height of the canvas
-	cv::Point canvasCenter(canvasWidth / 2, canvasHeight / 2);
+
 	for (int i = 0; i < this->controlPoints.size(); i++) {
-		vec2 point = vec2(controlPoints[i].x() + canvasCenter.x, canvasCenter.y - controlPoints[i].y());
+		vec3 pointbefore = vec3(controlPoints[i]->pos.x(), controlPoints[i]->pos.y(), 1.f);
+		vec3 point = this->getTransformMat() * pointbefore;
 		cv::circle(image, cv::Point(point.x(), point.y()), 1, cv::Scalar(255, 255, 0), 2);
+	}
+}
+
+void Letter::drawNormal(cv::Mat& image) {
+	for (int i = 0; i < this->controlPoints.size(); i++) {
+		vec3 pointbefore = vec3(controlPoints[i]->pos.x(), controlPoints[i]->pos.y(), 1.f);
+		vec3 point = this->getTransformMat() * pointbefore;
+		vec2 nor = controlPoints[i]->normal;
+		cv::Scalar color;
+		if (controlPoints[i]->color) {
+			color = cv::Scalar(255, 0, 0);
+		}
+		else {
+			color = cv::Scalar(255, 255, 255);
+		}
+		//cv::Scalar color = cv::Scalar(255, 0, 0);
+		cv::line(image,
+			cv::Point(point.x(), point.y()),
+			cv::Point(point.x() + nor.x() * 16.f, point.y() - nor.y() * 16.f),
+			color, 2);
 	}
 }
 
@@ -977,17 +1043,20 @@ mat3 Letter::getTransformMat() {
 }
 
 
+
 int Letter::getContour(cv::Mat& img, bool computeArea) {
 	std::vector<std::vector<cv::Point>> letter;
 	vec2 start = vec2(-1.0f, -1.0f);
 	bool closed = false;
 	int idx = -1;
-	for (int i = 0; i < this->controlPoints.size(); i += 4) {
+	ControlPoint* curr = this->start;
+	do {
 		{
 			std::vector<vec3> controlPointsTransformed;
 			for (int j = 0; j < 4; j++) {
-				vec3 point = vec3(this->controlPoints[i + j].x(), this->controlPoints[i + j].y(), 1);
+				vec3 point = vec3(curr->pos.x(), curr->pos.y(), 1.f);
 				controlPointsTransformed.push_back(this->getTransformMat() * point);
+				if (j != 3) curr = curr->next;
 			}
 			std::vector<vec2> points;
 			points.push_back(vec2(controlPointsTransformed[0].x(), controlPointsTransformed[0].y()));
@@ -1018,7 +1087,8 @@ int Letter::getContour(cv::Mat& img, bool computeArea) {
 				}
 			}
 		}
-	}
+	} while (curr != this->start);
+
 	cv::drawContours(img, letter, -1, 255, -1);
 	cv::imshow("test", img);
 	
@@ -1039,5 +1109,155 @@ int Letter::getContour(cv::Mat& img, bool computeArea) {
 	//cv::imshow("test", img);
 	//cv::imshow("test", img);
 	return area;
+	
+}
+
+ControlPoint::ControlPoint(vec2 position, bool outline): pos(position), isOutline(outline), isFixed(false){}
+
+ControlPoint::~ControlPoint() {}
+
+vec2 ControlPoint::getNormal(){
+
+	vec2 normal;
+
+	if (!this->isOutline) {
+		vec2 p0, p1, p2, p3;
+		float t;
+		if (this->next->isOutline) {
+			p0 = this->prev->prev->pos;
+			p1 = this->prev->pos;
+			p2 = this->pos;
+			p3 = this->next->pos;
+			t = 0.6666666667;
+		}
+		else {
+			p0 = this->prev->pos;
+			p1 = this->pos;
+			p2 = this->next->pos;
+			p3 = this->next->next->pos;
+			std::cout << std::endl;
+			t = 0.333333333333;
+		}
+		this->color = true;
+		float oneMinusT = 1.0f - t;
+		vec2 tangent = (p1 - p0) * 3.0f * powf(oneMinusT, 2.0f) +
+			(p2 - p1) * 6.0f * oneMinusT * t +
+			(p3 - p2) * 3.0f * powf(t, 2.0f);
+		normal = vec2(-tangent.y(), tangent.x());
+		normal.normalize();
+		std::cout << normal << std::endl;
+	}
+	else {
+		vec2 p_left;
+		vec2 p_right;
+
+		vec2 p0, p1, p2, p3;
+		p0 = this->pos;
+		p1 = this->next->pos;
+		p2 = this->next->next->pos;
+		p3 = this->next->next->next->pos;
+		vec2 d1 = p3 - p0;
+		float distance1 = d1.norm();
+		float t1 = 0.001f / distance1;
+
+		vec2 tangent1 = 3.f * powf(1 - t1, 2.f) * (p1 - p0) + 6.f * (1 - t1) * t1 * (p2 - p1) + 3.f * powf(t1, 2.f) * (p3 - p2);
+		vec2 normal1 = vec2(-tangent1.y(), tangent1.x());
+		normal1.normalize();
+
+		p0 = this->prev->prev->prev->pos;
+		p1 = this->prev->prev->pos;
+		p2 = this->prev->pos;
+		p3 = this->pos;
+		vec2 d2 = p3 - p0;
+		float distance2 = d2.norm();
+		float t2 = 1 - 0.001f / distance2;
+
+
+		vec2 tangent2 = 3.f * powf(1 - t2, 2.f) * (p1 - p0) + 6.f * (1.f - t2) * t2 * (p2 - p1) + 3.f * powf(t2, 2.f) * (p3 - p2);
+		vec2 normal2 = vec2(-tangent2.y(), tangent2.x());
+		normal2.normalize();
+
+		normal = (normal1 + normal2) / 2.f;
+		normal.normalize();
+		this->color = false;
+	}
+	return normal;
+}
+
+vec2 lerp(vec2 p0, vec2 p1, float t = 0.5) {
+	return p0 * (1 - t) + p1 * t;
+}
+
+void Letter::split() {
+	ControlPoint* curr = this->start;
+	do {
+		//sPtr<ControlPoint> newP = mkS<ControlPoint>()
+		std::vector<ControlPoint*> segmentPoints;
+		for (int j = 0; j < 4; j++) {
+			segmentPoints.push_back(curr);
+			if (j != 3) curr = curr->next;
+		}
+		vec2 p0 = segmentPoints[0]->pos;
+		vec2 p1 = segmentPoints[1]->pos;
+		vec2 p2 = segmentPoints[2]->pos;
+		vec2 p3 = segmentPoints[3]->pos;
+
+		vec2 A = lerp(p0, p1);
+		vec2 B = lerp(p1, p2);
+		vec2 C = lerp(p2, p3);
+		
+		vec2 D = lerp(A, B);
+		vec2 E = lerp(B, C);
+
+		vec2 F = lerp(D, E);
+
+		sPtr<ControlPoint> newP0 = mkS<ControlPoint>(F, true);
+		segmentPoints[2]->next = newP0.get();
+		newP0->prev = segmentPoints[2];
+		segmentPoints[1]->pos = A;
+		segmentPoints[2]->pos = D;
+
+		sPtr<ControlPoint> newP1 = mkS<ControlPoint>(E, false);
+		sPtr<ControlPoint> newP2 = mkS<ControlPoint>(C, false);
+		newP0->next = newP1.get();
+		newP1->prev = newP0.get();
+		newP1->next = newP2.get();
+		newP2->prev = newP1.get();
+		newP2->next = segmentPoints[3];
+		segmentPoints[3]->prev = newP2.get();
+
+		this->controlPoints.push_back(std::move(newP0));
+		this->controlPoints.push_back(std::move(newP1));
+		this->controlPoints.push_back(std::move(newP2));
+	}while(curr != this->start);
+
+	//update normal
+	for (int i = 0; i < this->controlPoints.size(); i++) {
+		this->controlPoints[i]->normal = this->controlPoints[i]->getNormal();
+	}
+}
+
+void Letter::update(std::vector<bool>& direction, float miu){
+	//deformation test
+	//this->controlPoints[14]->pos = this->controlPoints[14]->pos - (this->controlPoints[14]->normal * 20.f);
+	//this->controlPoints[13]->pos = this->controlPoints[13]->pos - (this->controlPoints[13]->normal * 20.f);
+	
+	//update pos
+	ControlPoint* curr = start;
+	int idx = 0;
+	do {
+		bool dir = direction[idx];
+		vec2 distance = this->controlPoints[idx]->normal * miu;
+		if (!dir) {
+			distance *= -1;
+		}
+		this->controlPoints[idx]->pos = this->controlPoints[idx]->pos + distance;
+		curr = curr->next;
+	} while (curr != start);
+
+	//update normal
+	for (int i = 0; i < this->controlPoints.size(); i++) {
+		this->controlPoints[i]->normal = this->controlPoints[i]->getNormal();
+	}
 	
 }

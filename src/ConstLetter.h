@@ -17,11 +17,28 @@ struct Transform {
 	vec2 scale;
 };
 
+class ControlPoint {
+private:
+	bool isOutline;
+	bool isFixed;
+	vec2 pos;
+	ControlPoint* next;
+	ControlPoint* prev;
+	bool color;
+	vec2 normal;
+public:
+	ControlPoint(vec2 position, bool outline);
+	~ControlPoint();
+	vec2 getNormal();
+	friend class Letter;
+};
+
 class Letter {
 private:
 	std::vector<Anchor> anchors;
 	Transform transform;
-	std::vector<vec2> controlPoints;
+	std::vector<sPtr<ControlPoint>> controlPoints;
+	ControlPoint* start;
 	float boundingArea;
 	mat3 getTransformMat();
 	int id;
@@ -36,12 +53,15 @@ public:
 	void drawBezierCurve(cv::Mat&);
 	void drawAnchors(cv::Mat&);
 	void drawControlPoints(cv::Mat&);
+	void Letter::drawNormal(cv::Mat& image);
 
 	void setScale(float x, float y);
 	void setRotate(float angle);
 	void setTranslate(float x, float y);
 
 	int getContour(cv::Mat& img, bool computeArea);
+	void split();
+	void update(std::vector<bool>&, float miu);
 	friend class ConstLetters;
 	friend class LetterAlignment;
 	friend class ControlPoint;
@@ -55,18 +75,4 @@ public:
 	~ConstLetters();
 	Letter& getLetter(char letter);
 	friend class Letter;
-};
-
-class ControlPoint {
-private:
-	bool isOutline;
-	bool isFixed;
-	bool moveDirection;
-	vec2 pos;
-	ControlPoint* next;
-	ControlPoint* prev;
-public:
-	ControlPoint(vec2 position, bool outline);
-	~ControlPoint();
-	vec2 getNormal() const;
 };
