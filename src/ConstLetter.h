@@ -44,6 +44,7 @@ public:
 	int getContour(cv::Mat& img, bool computeArea);
 	friend class ConstLetters;
 	friend class LetterAlignment;
+	friend class ControlPoint;
 };
 
 class ConstLetters {
@@ -54,4 +55,18 @@ public:
 	~ConstLetters();
 	Letter& getLetter(char letter);
 	friend class Letter;
+};
+
+class ControlPoint {
+private:
+	bool isOutline;
+	bool isFixed;
+	bool moveDirection;
+	vec2 pos;
+	ControlPoint* next;
+	ControlPoint* prev;
+public:
+	ControlPoint(vec2 position, bool outline);
+	~ControlPoint();
+	vec2 getNormal() const;
 };

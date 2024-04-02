@@ -2,6 +2,7 @@
 #include <opencv2/opencv.hpp>
 #include "openGA.hpp"
 #include <Eigen/Dense>
+#include <memory>
 #define M_PI       3.14159265358979323846
 #define TORADIAN 0.01745329252
 #define TODEGREE 57.295779513
@@ -67,3 +68,5 @@ struct GACost
 typedef EA::Genetic<GASolution, GACost> GA_Type;
 typedef EA::GenerationType<GASolution, GACost> Generation_Type;
 
+#define uPtr std::unique_ptr
+#define mkU std::make_unique
