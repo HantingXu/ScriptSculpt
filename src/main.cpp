@@ -188,7 +188,7 @@ int main()
         }
         std::cout << std::endl;
     }*/
-
+    
     std::vector<bool> v = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     sol.push_back(v);
     std::vector<std::vector<vec2>> ptsPos;
@@ -204,7 +204,7 @@ int main()
         letterDeform.letters[i].drawBezierCurve(contourImg);
     }
     cv::imshow("Bezier Curve", contourImg);
-
+   
     cv::waitKey(0);
 #endif
     return 0;

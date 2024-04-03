@@ -231,7 +231,7 @@ void utilityCore::getLongestPath(const std::vector<std::vector<Vec3i>>& graph, i
     while (!waitlist.empty())
     {
         int currNode = waitlist.front();
-        std::cout << currNode << std::endl;
+        //std::cout << currNode << std::endl;
         visited[currNode] = 1;
         int d = distance[currNode];
         for (int i = 0; i < graph[currNode].size(); i++)
