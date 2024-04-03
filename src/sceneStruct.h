@@ -13,6 +13,8 @@
 #define ASCEND 0
 #define DESCEN 1
 
+#define ONCONTOUR 5
+
 using vec2 = Eigen::Vector2f;
 using vec3 = Eigen::Vector3f;
 using mat3 = Eigen::Matrix3f;

@@ -1090,7 +1090,7 @@ int Letter::getContour(cv::Mat& img, bool computeArea) {
 	} while (curr != this->start);
 
 	cv::drawContours(img, letter, -1, 255, -1);
-	cv::imshow("test", img);
+	//cv::imshow("test", img);
 	
 	int area = 0;
 	if (computeArea)
@@ -1112,9 +1112,86 @@ int Letter::getContour(cv::Mat& img, bool computeArea) {
 	
 }
 
+int Letter::getArea(cv::Mat& img, const std::vector<vec2>& ptsPos)
+{
+	std::vector<std::vector<cv::Point>> letter;
+	vec2 start = vec2(-1.0f, -1.0f);
+	bool closed = false;
+	int idx = -1;
+
+	for (int i = 0; i < ptsPos.size(); i += 3)
+	{
+		{
+			std::vector<vec3> controlPointsTransformed;
+			for (int j = 0; j < 3; j++) 
+			{
+				vec3 point = vec3(ptsPos[i + j].x(), ptsPos[i + j].y(), 1);
+				controlPointsTransformed.push_back(this->getTransformMat() * point);
+			}
+			if (i + 3 == ptsPos.size())
+			{
+				vec3 point = vec3(ptsPos[0].x(), ptsPos[0].y(), 1);
+				controlPointsTransformed.push_back(this->getTransformMat() * point);
+			}
+			else
+			{
+				vec3 point = vec3(ptsPos[i + 3].x(), ptsPos[i + 3].y(), 1);
+				controlPointsTransformed.push_back(this->getTransformMat() * point);
+			}
+
+			std::vector<vec2> points;
+			points.push_back(vec2(controlPointsTransformed[0].x(), controlPointsTransformed[0].y()));
+			points.push_back(vec2(controlPointsTransformed[1].x(), controlPointsTransformed[1].y()));
+			points.push_back(vec2(controlPointsTransformed[2].x(), controlPointsTransformed[2].y()));
+			points.push_back(vec2(controlPointsTransformed[3].x(), controlPointsTransformed[3].y()));
+			if (!closed)
+			{
+				letter.push_back(std::vector<cv::Point>());
+				++idx;
+				start = points[0];
+				closed = true;
+			}
+			else
+			{
+				if (start == points[3])
+					closed = false;
+			}
+			std::vector<vec2> curvePoints = calculateBezierPoints(points, 100);
+
+			//std::cout << cv::Point(points[0][0], points[0][1]) << ", " << cv::Point(points[3][0], points[3][1]) << std::endl;
+			for (size_t i = 0; i < curvePoints.size() - 1; ++i) {
+				cv::LineIterator iter(cv::Point(curvePoints[i][0], curvePoints[i][1]), cv::Point(curvePoints[i + 1][0], curvePoints[i + 1][1]));
+				for (int j = 0; j < iter.count - 1; j++, ++iter)
+				{
+					letter[idx].push_back(iter.pos());
+					//cv::circle(m, iter.pos(), 1, 255, 2);
+				}
+			}
+		}
+	}
+	int h = letter.size();
+	cv::drawContours(img, letter, -1, 255, -1);
+	int area = 0;
+	cv::Mat im = cv::Mat::zeros(img.size(), img.type());
+	cv::drawContours(im, letter, -1, 255, -1);
+	area = cv::countNonZero(im);
+	return area;
+}
+
 ControlPoint::ControlPoint(vec2 position, bool outline): pos(position), isOutline(outline), isFixed(false){}
 
 ControlPoint::~ControlPoint() {}
+
+bool ControlPoint::checkFixed(cv::Mat& contour)
+{
+	if (contour.at<int>(this->pos.y(), this->pos.x()) != 0)
+	{
+		this->isFixed = true;
+		return true;
+	}
+	else
+		return false;
+}
 
 vec2 ControlPoint::getNormal(){
 
@@ -1135,7 +1212,7 @@ vec2 ControlPoint::getNormal(){
 			p1 = this->pos;
 			p2 = this->next->pos;
 			p3 = this->next->next->pos;
-			std::cout << std::endl;
+			//std::cout << std::endl;
 			t = 0.333333333333;
 		}
 		this->color = true;
@@ -1145,7 +1222,7 @@ vec2 ControlPoint::getNormal(){
 			(p3 - p2) * 3.0f * powf(t, 2.0f);
 		normal = vec2(-tangent.y(), tangent.x());
 		normal.normalize();
-		std::cout << normal << std::endl;
+		//std::cout << normal << std::endl;
 	}
 	else {
 		vec2 p_left;
@@ -1237,7 +1314,7 @@ void Letter::split() {
 	}
 }
 
-void Letter::update(std::vector<bool>& direction, float miu){
+void Letter::update(const std::vector<bool>& direction, float miu){
 	//deformation test
 	//this->controlPoints[14]->pos = this->controlPoints[14]->pos - (this->controlPoints[14]->normal * 20.f);
 	//this->controlPoints[13]->pos = this->controlPoints[13]->pos - (this->controlPoints[13]->normal * 20.f);
@@ -1246,12 +1323,16 @@ void Letter::update(std::vector<bool>& direction, float miu){
 	ControlPoint* curr = start;
 	int idx = 0;
 	do {
-		bool dir = direction[idx];
-		vec2 distance = this->controlPoints[idx]->normal * miu;
-		if (!dir) {
-			distance *= -1;
+		if (!curr->isFixed)
+		{
+			bool dir = direction[idx];
+			vec2 distance = curr->normal * miu;
+			if (!dir) {
+				distance *= -1;
+			}
+			curr->pos = curr->pos + distance;
 		}
-		this->controlPoints[idx]->pos = this->controlPoints[idx]->pos + distance;
+		++idx;
 		curr = curr->next;
 	} while (curr != start);
 
@@ -1259,5 +1340,46 @@ void Letter::update(std::vector<bool>& direction, float miu){
 	for (int i = 0; i < this->controlPoints.size(); i++) {
 		this->controlPoints[i]->normal = this->controlPoints[i]->getNormal();
 	}
-	
+}
+
+void Letter::update(const std::vector<bool>& direction, std::vector<vec2>& ptsPos, float miu)
+{
+	ControlPoint* curr = start;
+	int idx = 0;
+	do {
+		
+		if (!curr->isFixed)
+		{
+			bool dir = direction[idx];
+			vec2 distance = curr->normal * miu;
+			if (!dir) {
+				distance *= -1;
+			}
+			vec2 newPos = curr->pos + distance;
+			ptsPos.push_back(newPos);
+		}
+		else
+		{
+			ptsPos.push_back(curr->pos);
+		}
+		++idx;
+		curr = curr->next;
+	} while (curr != start);
+	//no need to update the normal here
+}
+
+void Letter::checkOnShape(cv::Mat& contour)
+{
+	for (int i = 0; i < this->controlPoints.size(); i++)
+	{
+		this->controlPoints[i]->checkFixed(contour);
+	}
+}
+
+void Letter::checkNormal()
+{
+	for (int i = 0; i < this->controlPoints.size(); i++)
+	{
+		this->controlPoints[i]->normal = this->controlPoints[i]->getNormal();
+	}
 }

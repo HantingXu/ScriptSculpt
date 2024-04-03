@@ -7,6 +7,7 @@
 #include "LetterAlignment.h"
 #include "sceneStruct.h"
 #include "GASolver.h"
+#include "deformation.h"
 using namespace cv;
 using Eigen::MatrixXd;
 
@@ -30,6 +31,7 @@ int main()
     std::vector<Point> contour;
     cv::Mat contourImg = cv::Mat::zeros(gray.size(), gray.type());
     utilityCore::extractContour(gray, contourImg, contour);
+    cv::Mat ctrImg = contourImg.clone();
     imgShape.contour = contour;
     imgShape.area = cv::contourArea(contour);
     //cv::imshow("contour", contourImg);
@@ -84,7 +86,7 @@ int main()
     std::vector<int> midPoints;
     std::vector<Eigen::Vector2f> normals;
     utilityCore::subdivide(numLetter, centerline, midPoints, normals);
-    
+
     for (int i = 0; i < numLetter; i++)
     {
         cv::circle(protruImg, centerline[midPoints[i]], 4, 200, -1);
@@ -133,26 +135,19 @@ int main()
     std::vector<Letter> letters;
 
     cv::Mat image(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
-    Letter l1 = l.getLetter('B');
-    Letter l2 = l.getLetter('U');
-    Letter l3 = l.getLetter('N');
-    Letter l4 = l.getLetter('N');
+    //Letter l1 = l.getLetter('B');
+    //Letter l2 = l.getLetter('U');
+    //Letter l3 = l.getLetter('N');
+    //Letter l4 = l.getLetter('N');
     Letter l5 = l.getLetter('Y');
     //Letter l6 = l.getLetter('Y');
     //Letter l7 = l.getLetter('O');
     //Letter l8 = l.getLetter('O');
-    letters.push_back(l1);
-    letters.push_back(l2);
-    letters.push_back(l3);
-    letters.push_back(l4);
+    //letters.push_back(l1);
+    //letters.push_back(l2);
+    //letters.push_back(l3);
+    //letters.push_back(l4);
     letters.push_back(l5);
-
-    l3.setTranslate(400, 400);
-    //l3.split();
-    //l3.setScale(0.25, 0.25);
-    l3.drawBezierCurve(image);
-    l3.drawControlPoints(image);
-    l3.drawNormal(image);
 
     //letters.push_back(l6);
     //letters.push_back(l7);
@@ -160,25 +155,56 @@ int main()
     //ImgShape img;
     LetterAlignment align = LetterAlignment(letters, imgShape);
     align.initialAlignment();
-    /*
+    cv::Mat mss = contourImg.clone();
     for (int i = 0; i < align.letters.size(); i++) {
-        align.letters[i].drawBezierCurve(contourImg);
+        align.letters[i].drawBezierCurve(mss);
     }
-    cv::imshow("Bezier Curve", contourImg);*/
+    cv::imshow("Bezier Curve1", mss);
 
     //std::cout << align.smoothFlowScore() << std::endl;
-    
+
     //utilityCore::solveGA(align);
 
-    /**
+    /*
     for (int i = 0; i < align.letters.size(); i++)
     {
         align.letters[i].drawBezierCurve(contourImg);
         align.letters[i].drawControlPoints(contourImg);
     }
-    **/
-    cv::imshow("Bezier Curvee", image);
+    cv::imshow("Bezier Curve", contourImg);*/
 
+    LetterDeform letterDeform = LetterDeform(align.letters, imgShape, ctrImg);
+    letterDeform.updateNormal();
+    Deform deform = Deform(40000, 100, 60, 0.025, &letterDeform);
+    std::vector<std::vector<bool>> sol;
+    //deform.step(sol);
+    /*
+    std::cout << sol.size() << std::endl;
+    for (int i = 0; i < sol.size(); i++)
+    {
+        for (int j = 0; j < sol[i].size(); j++)
+        {
+            std::cout << sol[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }*/
+    
+    std::vector<bool> v = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    sol.push_back(v);
+    std::vector<std::vector<vec2>> ptsPos;
+    for (int j = 0; j < letterDeform.letters.size(); j++)
+    {
+        ptsPos.push_back(std::vector<vec2>());
+        letterDeform.letters[j].update(v, ptsPos[j], 100);
+    }
+    float s = letterDeform.fitScore(ptsPos);
+    std::cout << s << std::endl;
+    letterDeform.updateLetter(sol, 100);
+    for (int i = 0; i < letterDeform.letters.size(); i++) {
+        letterDeform.letters[i].drawBezierCurve(contourImg);
+    }
+    cv::imshow("Bezier Curve", contourImg);
+   
     cv::waitKey(0);
 #endif
     return 0;

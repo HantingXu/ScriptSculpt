@@ -30,6 +30,7 @@ public:
 	ControlPoint(vec2 position, bool outline);
 	~ControlPoint();
 	vec2 getNormal();
+	bool checkFixed(cv::Mat& contour);
 	friend class Letter;
 };
 
@@ -60,11 +61,16 @@ public:
 	void setTranslate(float x, float y);
 
 	int getContour(cv::Mat& img, bool computeArea);
+	int getArea(cv::Mat&, const std::vector<vec2>& ptsPos);
 	void split();
-	void update(std::vector<bool>&, float miu);
+	void update(const std::vector<bool>&, float miu);
+	void update(const std::vector<bool>&, std::vector<vec2>& ptsPos, float miu);
+	void checkNormal();
+	void checkOnShape(cv::Mat& contour);
 	friend class ConstLetters;
 	friend class LetterAlignment;
 	friend class ControlPoint;
+	friend class Deform;
 };
 
 class ConstLetters {

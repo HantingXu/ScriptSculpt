@@ -155,7 +155,7 @@ void LetterAlignment::initialAlignment() {
 			rad *= sign;
 
 			letters[i].setRotate(rad * 180.f / M_PI );
-			std::cout << rad * 180.f / M_PI << std::endl;
+			//std::cout << rad * 180.f / M_PI << std::endl;
 		}
 		else {
 			locations.push_back(-1);

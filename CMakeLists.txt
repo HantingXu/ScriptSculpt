@@ -51,6 +51,7 @@ set(headers
     src/LetterAlignment.h
     src/openGA.hpp
     src/GASolver.h
+    src/deformation.h
     )
 
 set(sources
@@ -60,6 +61,7 @@ set(sources
     src/trace_skeleton.cpp
     src/LetterAlignment.cpp
     src/GASolver.cpp
+    src/deformation.cpp
     )
 
 list(SORT headers)
