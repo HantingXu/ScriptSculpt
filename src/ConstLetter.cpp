@@ -1238,20 +1238,32 @@ void Letter::split() {
 }
 
 void Letter::update(std::vector<bool>& direction, float miu){
+/**
 	//deformation test
-	//this->controlPoints[14]->pos = this->controlPoints[14]->pos - (this->controlPoints[14]->normal * 20.f);
-	//this->controlPoints[13]->pos = this->controlPoints[13]->pos - (this->controlPoints[13]->normal * 20.f);
-	
+	//this->controlPoints[14]->pos = this->controlPoints[14]->pos + (this->controlPoints[14]->normal * 20.f);
+	for (int i = 0; i < this->controlPoints.size(); i++) {
+		int sign = rand() % 2;
+		vec2 distance = this->controlPoints[i]->normal * 20.f;
+		if (sign == 1) {
+			distance *= -1;
+		}
+		this->controlPoints[i]->pos = this->controlPoints[i]->pos + distance;
+	}
+**/
 	//update pos
 	ControlPoint* curr = start;
 	int idx = 0;
 	do {
-		bool dir = direction[idx];
-		vec2 distance = this->controlPoints[idx]->normal * miu;
-		if (!dir) {
-			distance *= -1;
+		if (!curr->isFixed)
+		{
+			bool dir = direction[idx];
+			vec2 distance = curr->normal * miu;
+			if (!dir) {
+				distance *= -1;
+			}
+			curr->pos = curr->pos + distance;
 		}
-		this->controlPoints[idx]->pos = this->controlPoints[idx]->pos + distance;
+		++idx;
 		curr = curr->next;
 	} while (curr != start);
 
