@@ -328,3 +328,23 @@ void LetterAlignment::setGASolution(GASolution& sol)
 		sol.var[i * 3 + 2] = letters[i].transform.scale[1];
 	}
 }
+
+void LetterAlignment::fixLetters() {
+	for (int i = 0; i < this->letters.size(); i++) {
+		for (int j = 0; j < this->letters[i].controlPoints.size(); j++) {
+			vec2 originalPos = this->letters[i].controlPoints[j]->pos;
+			vec3 pos = vec3(originalPos.x(), originalPos.y(), 1.f);
+			vec3 newPos = this->letters[i].getTransformMat() * pos;
+			this->letters[i].controlPoints[j]->pos = vec2(newPos.x(), newPos.y());
+		}
+		this->letters[i].setTranslate(0, 0);
+		this->letters[i].setRotate(0);
+		this->letters[i].setScale(1, 1);
+	}
+
+	for (int i = 0; i < this->letters.size(); i++) {
+		for (int j = 0; j < this->letters[i].controlPoints.size(); j++) {
+			this->letters[i].controlPoints[j]->normal = this->letters[i].controlPoints[j]->getNormal();
+		}
+	}
+}

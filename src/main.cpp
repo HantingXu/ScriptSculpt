@@ -135,19 +135,20 @@ int main()
     std::vector<Letter> letters;
 
     cv::Mat image(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
-    //Letter l1 = l.getLetter('B');
-    //Letter l2 = l.getLetter('U');
-    //Letter l3 = l.getLetter('N');
-    //Letter l4 = l.getLetter('N');
-    Letter l5 = l.getLetter('Y');
+    Letter l1 = Letter('B');
+    Letter l2 = Letter('U');
+    Letter l3 = Letter('N');
+    Letter l4 = Letter('N');
+    Letter l5 = Letter('Y');
     //Letter l6 = l.getLetter('Y');
     //Letter l7 = l.getLetter('O');
     //Letter l8 = l.getLetter('O');
-    //letters.push_back(l1);
-    //letters.push_back(l2);
-    //letters.push_back(l3);
-    //letters.push_back(l4);
+    letters.push_back(l1);
+    letters.push_back(l2);
+    letters.push_back(l3);
+    letters.push_back(l4);
     letters.push_back(l5);
+
 
     //letters.push_back(l6);
     //letters.push_back(l7);
@@ -155,9 +156,12 @@ int main()
     //ImgShape img;
     LetterAlignment align = LetterAlignment(letters, imgShape);
     align.initialAlignment();
+    utilityCore::solveGA(align);
+    align.fixLetters();
     cv::Mat mss = contourImg.clone();
     for (int i = 0; i < align.letters.size(); i++) {
         align.letters[i].drawBezierCurve(mss);
+        //align.letters[i].drawNormal(mss);
     }
     cv::imshow("Bezier Curve1", mss);
 
@@ -172,6 +176,7 @@ int main()
         align.letters[i].drawControlPoints(contourImg);
     }
     cv::imshow("Bezier Curve", contourImg);*/
+    /**
 
     LetterDeform letterDeform = LetterDeform(align.letters, imgShape, ctrImg);
     letterDeform.updateNormal();
@@ -188,22 +193,23 @@ int main()
         }
         std::cout << std::endl;
     }*/
-    
+    /**
     std::vector<bool> v = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     sol.push_back(v);
     std::vector<std::vector<vec2>> ptsPos;
     for (int j = 0; j < letterDeform.letters.size(); j++)
     {
         ptsPos.push_back(std::vector<vec2>());
-        letterDeform.letters[j].update(v, ptsPos[j], 100);
+        letterDeform.letters[j].update(v, ptsPos[j], 10);
     }
     float s = letterDeform.fitScore(ptsPos);
     std::cout << s << std::endl;
-    letterDeform.updateLetter(sol, 100);
+    letterDeform.updateLetter(sol, 10);
     for (int i = 0; i < letterDeform.letters.size(); i++) {
         letterDeform.letters[i].drawBezierCurve(contourImg);
     }
     cv::imshow("Bezier Curve", contourImg);
+    **/
    
     cv::waitKey(0);
 #endif

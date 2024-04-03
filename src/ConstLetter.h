@@ -32,6 +32,7 @@ public:
 	vec2 getNormal();
 	bool checkFixed(cv::Mat& contour);
 	friend class Letter;
+	friend class LetterAlignment;
 };
 
 class Letter {

@@ -429,7 +429,8 @@ void Letter::generateControlPoints(char letter) {
 	for (int i = 0; i < points.size(); i++) {
 		if (i % 4 != 3) {
 			bool outline = (i % 4 == 0);
-			sPtr<ControlPoint> p = mkS<ControlPoint>(points[i], outline);
+			vec2 pos = vec2(points[i].x(), -points[i].y());
+			sPtr<ControlPoint> p = mkS<ControlPoint>(pos, outline);
 			this->controlPoints.push_back(std::move(p));
 		}
 	}
@@ -1004,7 +1005,7 @@ void Letter::drawNormal(cv::Mat& image) {
 		//cv::Scalar color = cv::Scalar(255, 0, 0);
 		cv::line(image,
 			cv::Point(point.x(), point.y()),
-			cv::Point(point.x() + nor.x() * 16.f, point.y() - nor.y() * 16.f),
+			cv::Point(point.x() + nor.x() * 16.f, point.y() + nor.y() * 16.f),
 			color, 2);
 	}
 }
@@ -1034,7 +1035,7 @@ mat3 Letter::getTransformMat() {
 		0, 1, this->transform.pos.y(),
 		0, 0, 1;
 	scale << this->transform.scale.x(), 0, 0,
-		0, -this->transform.scale.y(), 0,
+		0, this->transform.scale.y(), 0,
 		0, 0, 1;
 
 	mat3 transform = trans * rot * scale;
@@ -1220,7 +1221,7 @@ vec2 ControlPoint::getNormal(){
 		vec2 tangent = (p1 - p0) * 3.0f * powf(oneMinusT, 2.0f) +
 			(p2 - p1) * 6.0f * oneMinusT * t +
 			(p3 - p2) * 3.0f * powf(t, 2.0f);
-		normal = vec2(-tangent.y(), tangent.x());
+		normal = vec2(tangent.y(), -tangent.x());
 		normal.normalize();
 		//std::cout << normal << std::endl;
 	}
@@ -1238,7 +1239,7 @@ vec2 ControlPoint::getNormal(){
 		float t1 = 0.001f / distance1;
 
 		vec2 tangent1 = 3.f * powf(1 - t1, 2.f) * (p1 - p0) + 6.f * (1 - t1) * t1 * (p2 - p1) + 3.f * powf(t1, 2.f) * (p3 - p2);
-		vec2 normal1 = vec2(-tangent1.y(), tangent1.x());
+		vec2 normal1 = vec2(tangent1.y(), -tangent1.x());
 		normal1.normalize();
 
 		p0 = this->prev->prev->prev->pos;
@@ -1251,7 +1252,7 @@ vec2 ControlPoint::getNormal(){
 
 
 		vec2 tangent2 = 3.f * powf(1 - t2, 2.f) * (p1 - p0) + 6.f * (1.f - t2) * t2 * (p2 - p1) + 3.f * powf(t2, 2.f) * (p3 - p2);
-		vec2 normal2 = vec2(-tangent2.y(), tangent2.x());
+		vec2 normal2 = vec2(tangent2.y(), -tangent2.x());
 		normal2.normalize();
 
 		normal = (normal1 + normal2) / 2.f;

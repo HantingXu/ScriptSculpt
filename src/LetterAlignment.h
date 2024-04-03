@@ -36,4 +36,6 @@ public:
 
 	void setLetters(const GASolution& sol);
 	void setGASolution(GASolution& sol);
+
+	void fixLetters();
 };
