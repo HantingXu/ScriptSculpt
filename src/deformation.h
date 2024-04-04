@@ -15,12 +15,14 @@ public:
 	~LetterDeform();
 
 	void updateNormal();
-	void updateLetter(std::vector<std::vector<bool>>& bestDir, int stepSize);
+	void updateLetter(std::vector<std::vector<int>>& bestDir, int stepSize);
 	void splitLetter();
 
 	float fitScore(const std::vector<std::vector<vec2>>& ptsPos);
 	float smoothFlowScore(const std::vector<std::vector<vec2>>& ptsPos);
 	float getScore(const std::vector<std::vector<vec2>>& ptsPos);
+
+	void post();
 };
 
 class Deform
@@ -38,8 +40,8 @@ public:
 	const double thresh,
 	LetterDeform* ltDeform);
 
-	void step(std::vector<std::vector<bool>>& bestDir);
-	void localStep(std::vector<std::vector<bool>>& bestDir);
+	void step(std::vector<std::vector<int>>& bestDir);
+	void localStep(std::vector<std::vector<int>>& bestDir);
 	void setStep(int stepSize);
 	double computeCost();
 	void updateCtrlPoint();

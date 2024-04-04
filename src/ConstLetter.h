@@ -33,6 +33,7 @@ public:
 	bool checkFixed(cv::Mat& contour);
 	friend class Letter;
 	friend class LetterAlignment;
+	friend class LetterDeform;
 };
 
 class Letter {
@@ -64,13 +65,14 @@ public:
 	int getContour(cv::Mat& img, bool computeArea);
 	int getArea(cv::Mat&, const std::vector<vec2>& ptsPos);
 	void split();
-	void update(const std::vector<bool>&, float miu);
-	void update(const std::vector<bool>&, std::vector<vec2>& ptsPos, float miu);
+	void update(const std::vector<int>&, float miu);
+	void update(const std::vector<int>&, std::vector<vec2>& ptsPos, float miu);
 	void checkNormal();
 	void checkOnShape(cv::Mat& contour);
 	friend class ConstLetters;
 	friend class LetterAlignment;
 	friend class ControlPoint;
+	friend class LetterDeform;
 	friend class Deform;
 };
 

@@ -1328,7 +1328,7 @@ void Letter::split() {
 	}
 }
 
-void Letter::update(const std::vector<bool>& direction, float miu){
+void Letter::update(const std::vector<int>& direction, float miu){
 	//deformation test
 	//this->controlPoints[14]->pos = this->controlPoints[14]->pos + (this->controlPoints[14]->normal * 20.f);
 /**
@@ -1347,9 +1347,12 @@ void Letter::update(const std::vector<bool>& direction, float miu){
 	do {
 		if (!curr->isFixed)
 		{
-			bool dir = direction[idx];
+			int dir = direction[idx];
 			vec2 distance = curr->normal * miu;
-			if (!dir) {
+			if (dir == 0) {
+				distance *= 0;
+			}
+			else if (dir == 2) {
 				distance *= -1;
 			}
 			curr->pos = curr->pos + distance;
@@ -1365,7 +1368,7 @@ void Letter::update(const std::vector<bool>& direction, float miu){
 	}
 }
 
-void Letter::update(const std::vector<bool>& direction, std::vector<vec2>& ptsPos, float miu)
+void Letter::update(const std::vector<int>& direction, std::vector<vec2>& ptsPos, float miu)
 {
 	ControlPoint* curr = start;
 	int idx = 0;
@@ -1373,9 +1376,12 @@ void Letter::update(const std::vector<bool>& direction, std::vector<vec2>& ptsPo
 		
 		if (!curr->isFixed)
 		{
-			bool dir = direction[idx];
+			int dir = direction[idx];
 			vec2 distance = curr->normal * miu;
-			if (!dir) {
+			if (dir == 0) {
+				distance *= 0;
+			}
+			else if (dir == 2) {
 				distance *= -1;
 			}
 			vec2 newPos = curr->pos + distance;

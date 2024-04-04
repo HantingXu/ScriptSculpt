@@ -135,19 +135,19 @@ int main()
     std::vector<Letter> letters;
 
     cv::Mat image(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
-    //Letter l1 = l.getLetter('B');
+    Letter l1 = l.getLetter('B');
     Letter l2 = l.getLetter('U');
-    //Letter l3 = l.getLetter('N');
-    //Letter l4 = l.getLetter('N');
-    //Letter l5 = l.getLetter('Y');
+    Letter l3 = l.getLetter('N');
+    Letter l4 = l.getLetter('N');
+    Letter l5 = l.getLetter('Y');
     //Letter l6 = l.getLetter('Y');
     //Letter l7 = l.getLetter('O');
     //Letter l8 = l.getLetter('O');
-    //letters.push_back(l1);
+    letters.push_back(l1);
     letters.push_back(l2);
-    //letters.push_back(l3);
-    //letters.push_back(l4);
-    //letters.push_back(l5);
+    letters.push_back(l3);
+    letters.push_back(l4);
+    letters.push_back(l5);
 
     //letters.push_back(l6);
     //letters.push_back(l7);
@@ -155,6 +155,7 @@ int main()
     //ImgShape img;
     LetterAlignment align = LetterAlignment(letters, imgShape);
     align.initialAlignment();
+    //utilityCore::solveGA(align);
     cv::Mat mss = contourImg.clone();
     for (int i = 0; i < align.letters.size(); i++) {
         align.letters[i].drawBezierCurve(mss);
@@ -163,8 +164,9 @@ int main()
 
     //std::cout << align.smoothFlowScore() << std::endl;
 
-    utilityCore::solveGA(align);
-    /*
+    //utilityCore::solveGA(align);
+    
+    /**
     cv::Mat canvas = cv::Mat::zeros(imgShape.grayScale.size(), imgShape.grayScale.type());
     cv::Mat canvasTmp = cv::Mat::zeros(imgShape.grayScale.size(), imgShape.grayScale.type());
     for (int i = 0; i < align.letters.size(); i++)
@@ -173,12 +175,14 @@ int main()
     }
     cv::bitwise_and(canvas, imgShape.grayScale, canvasTmp);
     cv::bitwise_xor(canvas, canvasTmp, canvasTmp);
-    cv::imshow("Bezier Curve", canvasTmp);*/
+    cv::imshow("Bezier Curve", canvasTmp);
+    **/
+    //std::vector<Letter> let = { align.letters[0], align.letters[3] };
     
     LetterDeform letterDeform = LetterDeform(align.letters, imgShape, ctrImg);
-    letterDeform.updateNormal();
-    Deform deform = Deform(40000, 10, 60, 0.025, &letterDeform);
-    std::vector<std::vector<bool>> sol;
+    letterDeform.updateNormal();;
+    Deform deform = Deform(40000, 10, 5, 0.025, &letterDeform);
+    std::vector<std::vector<int>> sol;
     
     for (int i = 0; i < sol.size(); i++)
     {
@@ -188,25 +192,29 @@ int main()
         }
         std::cout << std::endl;
     }
-    for (int i = 0; i < 6; i++)
-    {
-        deform.localStep(sol);
-        letterDeform.updateLetter(sol, 10);
-        
-    }
-    letterDeform.splitLetter();
-    deform.setStep(5);
-    sol.clear();
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < 200; i++)
     {
         deform.localStep(sol);
         letterDeform.updateLetter(sol, 5);
+        
     }
+    
+    letterDeform.splitLetter();
+    deform.setStep(3);
+    sol.clear();
+    for (int i = 0; i < 25; i++)
+    {
+        deform.localStep(sol);
+        letterDeform.updateLetter(sol, 3);
+    }
+
     cv::Mat canvas = cv::Mat::zeros(contourImg.size(), cv::COLOR_BGR2GRAY);
     for (int i = 0; i < letterDeform.letters.size(); i++) {
         letterDeform.letters[i].drawBezierCurve(contourImg);
         letterDeform.letters[i].getContour(canvas, false);
     }
+
+    letterDeform.post();
     cv::imshow("Bezier Curve", canvas);
     cv::imshow("Bezier Curvecc", contourImg);
     /*

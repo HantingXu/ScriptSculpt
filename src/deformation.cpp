@@ -15,7 +15,7 @@ void LetterDeform::updateNormal()
 	}
 }
 
-void LetterDeform::updateLetter(std::vector<std::vector<bool>>& bestDir, int stepSize)
+void LetterDeform::updateLetter(std::vector<std::vector<int>>& bestDir, int stepSize)
 {
 	for (int i = 0; i < letters.size(); i++)
 	{
@@ -110,7 +110,7 @@ void Deform::setStep(int step)
 	this->stepSize = step;
 }
 
-void Deform::step(std::vector<std::vector<bool>>& bestDir)
+void Deform::step(std::vector<std::vector<int>>& bestDir)
 {
 	std::mt19937_64 rng;
 	// initialize the random number generator with time-dependent seed
@@ -118,12 +118,12 @@ void Deform::step(std::vector<std::vector<bool>>& bestDir)
 	std::seed_seq ss{ uint32_t(timeSeed & 0xffffffff), uint32_t(timeSeed >> 32) };
 	rng.seed(ss);
 	// initialize a uniform distribution between 0 and 2
-	std::uniform_real_distribution<double> unif(0, 2);
+	std::uniform_real_distribution<double> unif(0, 3);
 
-	std::vector<std::vector<bool>> tmpDir;
+	std::vector<std::vector<int>> tmpDir;
 	for (int i = 0; i < letterDeform->letters.size(); i++)
 	{
-		tmpDir.push_back(std::vector<bool>(letterDeform->letters[i].controlPoints.size()));
+		tmpDir.push_back(std::vector<int>(letterDeform->letters[i].controlPoints.size()));
 	}
 	
     float cost = FLT_MAX;
@@ -156,16 +156,16 @@ void Deform::step(std::vector<std::vector<bool>>& bestDir)
 }
 
 
-void Deform::localStep(std::vector<std::vector<bool>>& bestDir)
+void Deform::localStep(std::vector<std::vector<int>>& bestDir)
 {
-	std::vector<std::vector<bool>> tmpDir;
+	std::vector<std::vector<int>> tmpDir;
 	for (int i = 0; i < letterDeform->letters.size(); i++)
 	{
-		tmpDir.push_back(std::vector<bool>(letterDeform->letters[i].controlPoints.size(), false));
+		tmpDir.push_back(std::vector<int>(letterDeform->letters[i].controlPoints.size(), 0));
 	}
 	
 	std::vector<std::vector<vec2>> ptsPos;
-	float inoutCost[2];
+	std::array<float, 3> inoutCost;
 	for (int j = 0; j < letterDeform->letters.size(); j++)
 	{
 		int letterLen = letterDeform->letters[j].controlPoints.size();
@@ -173,7 +173,7 @@ void Deform::localStep(std::vector<std::vector<bool>>& bestDir)
 		for (int k = 0; k < letterLen; k++)
 		{
 			//std::cout << j << "," << k << std::endl;
-			for (int inout = 0; inout < 2; inout++)
+			for (int inout = 0; inout < 3; inout++)
 			{
 				for (int sz = 0; sz < letterDeform->letters.size(); sz++)
 				{
@@ -188,15 +188,19 @@ void Deform::localStep(std::vector<std::vector<bool>>& bestDir)
 				inoutCost[inout] = letterDeform->getScore(ptsPos);
 				ptsPos.clear();
 			}
-			if (inoutCost[0] > inoutCost[1])
-			{
-				tmpDir[j][k] = 1;
-			}
-			else
-			{
-				tmpDir[j][k] = 0;
-			}
+			auto minIt = std::min_element(inoutCost.begin(), inoutCost.end());
+			size_t index = std::distance(inoutCost.begin(), minIt);
+			tmpDir[j][k] = index;
 		}	
 	}
 	bestDir = tmpDir;
+}
+
+void LetterDeform::post() {
+	for (int i = 0; i < letters.size(); i++) {
+		for (int j = 0; j < letters[i].controlPoints.size(); j++) {
+			ControlPoint* p = letters[i].controlPoints[j].get();
+			p->pos = p->pos - p->normal * 20;
+		}
+	}
 }
