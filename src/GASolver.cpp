@@ -21,15 +21,33 @@ bool GASolver::evalSolution(const GASolution& alignSol, GACost& cost)
 GASolution GASolver::mutate(const GASolution& X_base, const std::function<double(void)>& rnd01, double shrink_scale)
 {
 	GASolution X_new;
-	const double mu = 0.2 * shrink_scale; // mutation radius (adjustable)
+	const double base = 0.2 * shrink_scale; // mutation radius (adjustable)
+	int sign = rand() % 2;
 	bool in_range;
 	do {
 		in_range = true;
 		X_new = X_base;
-		for (int i = 0; i < 15; i++)
+		for (int i = 0; i < 25; i++)
 		{
-			X_new.var[i] += mu * (rnd01() - rnd01());
-			in_range = in_range && (X_new.var[i] >= 0.0 && X_new.var[i] < 10.0);
+			double mu;
+			if (i % 5 == 3 || i % 5 == 4) {
+				mu  = base * 200;
+			}
+			else if (i % 5 == 0) {
+				mu = base * 1.5;
+			}
+			else {
+				mu = base;
+			}
+			if (sign == 0) {
+				X_new.var[i] += mu * (rnd01() - rnd01());
+			}
+			else {
+				X_new.var[i] -= mu * (rnd01() - rnd01());
+			}
+			if (i % 5 == 1 || i % 5 == 2) {
+				in_range = X_new.var[i] > 0;
+			}
 		}
 	} while (!in_range);
 	return X_new;
@@ -40,7 +58,7 @@ GASolution GASolver::crossover(const GASolution& X1, const GASolution& X2, const
 	GASolution X_new;
 	double r;
 
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < 25; i++)
 	{
 		r = rnd01();
 		X_new.var[i] = r * X1.var[i] + (1.0 - r) * X2.var[i];

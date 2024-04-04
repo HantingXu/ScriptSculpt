@@ -117,9 +117,9 @@ void LetterAlignment::initialAlignment() {
 
 	for (int i = 0; i < processed.size(); i++) {
 		bool hasCor = processed[i];
-		//float scale = shape.area / (2 * letters[i].boundingArea);
-		//std::cout << letters[i].boundingArea << std::endl;
-		float scale = 0.08f;
+		float desired = shape.area / (8.f * letters.size());
+		float scale = desired / letters[i].boundingArea;
+		scale = std::sqrt(scale);
 		letters[i].setScale(scale, scale);
 
 		if (hasCor) {
@@ -305,7 +305,7 @@ float LetterAlignment::smoothFlowScore()
 
 float LetterAlignment::refinedAlignment()
 {
-	//std::cout << 0.4f * aspectRatioScore() + 0.4f * fitScore() + 1.f * smoothFlowScore() << std::endl;
+	std::cout << 0.4f * aspectRatioScore() + 0.4f * fitScore() + 1.f * smoothFlowScore() << std::endl;
 	return 0.4f * aspectRatioScore() + 0.4f * fitScore() + 1.f * smoothFlowScore();
 	//return smoothFlowScore();
 }
@@ -314,8 +314,9 @@ void LetterAlignment::setLetters(const GASolution& sol)
 {
 	for (int i = 0; i < letters.size(); i++)
 	{
-		letters[i].transform.ori = sol.var[i * 3] * TODEGREE;
-		letters[i].transform.scale = vec2(sol.var[i * 3 + 1], sol.var[i * 3 + 2]);
+		letters[i].transform.ori = sol.var[i * 5] * TODEGREE;
+		letters[i].transform.scale = vec2(sol.var[i * 5 + 1], sol.var[i * 5 + 2]);
+		letters[i].transform.pos = vec2(sol.var[i * 5 + 3], sol.var[i * 5 + 4]);
 	}
 }
 
@@ -323,9 +324,11 @@ void LetterAlignment::setGASolution(GASolution& sol)
 {
 	for (int i = 0; i < letters.size(); i++)
 	{
-		sol.var[i * 3] = letters[i].transform.ori * TORADIAN;
-		sol.var[i * 3 + 1] = letters[i].transform.scale[0];
-		sol.var[i * 3 + 2] = letters[i].transform.scale[1];
+		sol.var[i * 5] = letters[i].transform.ori * TORADIAN;
+		sol.var[i * 5 + 1] = letters[i].transform.scale[0];
+		sol.var[i * 5 + 2] = letters[i].transform.scale[1];
+		sol.var[i * 5 + 3] = letters[i].transform.pos[0];
+		sol.var[i * 5 + 4] = letters[i].transform.pos[1];
 	}
 }
 

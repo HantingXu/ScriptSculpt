@@ -155,7 +155,7 @@ int main()
     //ImgShape img;
     LetterAlignment align = LetterAlignment(letters, imgShape);
     align.initialAlignment();
-    //utilityCore::solveGA(align);
+    utilityCore::solveGA(align);
     cv::Mat mss = contourImg.clone();
     for (int i = 0; i < align.letters.size(); i++) {
         align.letters[i].drawBezierCurve(mss);
@@ -178,6 +178,7 @@ int main()
     cv::imshow("Bezier Curve", canvasTmp);
     **/
     //std::vector<Letter> let = { align.letters[0], align.letters[3] };
+    
     
     LetterDeform letterDeform = LetterDeform(align.letters, imgShape, ctrImg);
     letterDeform.updateNormal();;
@@ -217,6 +218,7 @@ int main()
     letterDeform.post();
     cv::imshow("Bezier Curve", canvas);
     cv::imshow("Bezier Curvecc", contourImg);
+    
     /*
     std::vector<bool> v = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     sol.push_back(v);
