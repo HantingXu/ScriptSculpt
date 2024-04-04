@@ -173,13 +173,14 @@ void utilityCore::genProtrusions(cv::Mat& protruImg, cv::Mat& nProImg, std::vect
     {
         double area = cv::contourArea(cProContours[i]);
         std::cout << area << std::endl;
-        cv::drawContours(nProImg, cProContours, i, 255, -1);
+        //cv::drawContours(nProImg, cProContours, i, 255, -1);
         //needs further configuration
         if (area < 1000 || area > 7000)
         {
             cv::drawContours(protruImg, cProContours, i, 0, -1);
             ++contourNum;
         }
+        nProImg = protruImg.clone();
     }
     Mat t = cv::Mat::zeros(protruImg.size(), protruImg.type());
     for (int i = 0; i < proContours.size(); i++)
