@@ -1170,8 +1170,8 @@ int Letter::getArea(cv::Mat& img, const std::vector<vec2>& ptsPos)
 			}
 		}
 	}
-	int h = letter.size();
 	cv::drawContours(img, letter, -1, 255, -1);
+
 	int area = 0;
 	cv::Mat im = cv::Mat::zeros(img.size(), img.type());
 	cv::drawContours(im, letter, -1, 255, -1);
@@ -1185,13 +1185,26 @@ ControlPoint::~ControlPoint() {}
 
 bool ControlPoint::checkFixed(cv::Mat& contour)
 {
-	if (contour.at<int>(this->pos.y(), this->pos.x()) != 0)
+	int width = contour.size().width;
+	int height = contour.size().height;
+	int x = this->pos.x();
+	int y = this->pos.y();
+	int minX = std::max(x - 5, 0);
+	int maxX = std::min(x + 5, width);
+	int minY = std::max(y - 5, 0);
+	int maxY = std::min(y + 5, height);
+	for (int i = minX; i < maxX; i++)
 	{
-		this->isFixed = true;
-		return true;
+		for (int j = minY; j < maxY; j++)
+		{
+			if (contour.at<int>(y, x) != 0)
+			{
+				this->isFixed = true;
+				return true;
+			}
+		}
 	}
-	else
-		return false;
+	return false;
 }
 
 vec2 ControlPoint::getNormal(){
@@ -1348,6 +1361,7 @@ void Letter::update(const std::vector<bool>& direction, float miu){
 	//update normal
 	for (int i = 0; i < this->controlPoints.size(); i++) {
 		this->controlPoints[i]->normal = this->controlPoints[i]->getNormal();
+		this->controlPoints[i]->isFixed = false;
 	}
 }
 

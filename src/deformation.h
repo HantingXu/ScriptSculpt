@@ -16,6 +16,7 @@ public:
 
 	void updateNormal();
 	void updateLetter(std::vector<std::vector<bool>>& bestDir, int stepSize);
+	void splitLetter();
 
 	float fitScore(const std::vector<std::vector<vec2>>& ptsPos);
 	float smoothFlowScore(const std::vector<std::vector<vec2>>& ptsPos);
@@ -38,6 +39,8 @@ public:
 	LetterDeform* ltDeform);
 
 	void step(std::vector<std::vector<bool>>& bestDir);
+	void localStep(std::vector<std::vector<bool>>& bestDir);
+	void setStep(int stepSize);
 	double computeCost();
 	void updateCtrlPoint();
 	void initRound();

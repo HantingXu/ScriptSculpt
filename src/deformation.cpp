@@ -20,6 +20,16 @@ void LetterDeform::updateLetter(std::vector<std::vector<bool>>& bestDir, int ste
 	for (int i = 0; i < letters.size(); i++)
 	{
 		letters[i].update(bestDir[i], stepSize);
+		letters[i].checkOnShape(contour);
+	}
+}
+
+void LetterDeform::splitLetter()
+{
+	for (int i = 0; i < letters.size(); i++)
+	{
+		letters[i].split();
+		//letters[i].checkOnShape(contour);
 	}
 }
 
@@ -38,54 +48,49 @@ float LetterDeform::fitScore(const std::vector<std::vector<vec2>>& ptsPos)
 	float B = cv::countNonZero(canvas);
 	// B-A negative
 	return abs(log(shape.area / B));
-	return 0.0f;
 }
 
 //only care about overlap and area variance
 float LetterDeform::smoothFlowScore(const std::vector<std::vector<vec2>>& ptsPos)
 {
-	/*
-	int N = letters.size();
-	float totScore = 0.0f;
-	std::vector<float> areas;
-	float avgArea = 0.0f;
-	float areaDenom = N / (float)shape.area;
-	float overlap = 0.0f;
-	cv::Mat canvas = cv::Mat::zeros(shape.grayScale.size(), cv::COLOR_BGR2GRAY);
-	
-	for (int i = 0; i < N; i++)
+	cv::Mat canvas = cv::Mat::zeros(shape.grayScale.size(), shape.grayScale.type());
+	int tot = 0;
+	for (int i = 0; i < letters.size(); i++)
 	{
-		std::cout << "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk" << std::endl;
-		float area = letters[i].getArea(canvas, ptsPos[i]);
-		areas.push_back(area);
-		overlap += areas[i];
+		int area = letters[i].getArea(canvas, ptsPos[i]);
+		//std::cout << area << std::endl;
+		tot += area;
 	}
-	avgArea = overlap;
-	float cover = cv::countNonZero(canvas);
-	//is it really nessisary to /shape.area?
-	overlap = (overlap - cover) / (float)shape.area;
-	avgArea /= (float)N;
-	totScore += overlap;
-	float varArea = 0.0f;
-	float varOrient = 0.0f;
-	for (int i = 0; i < N; i++)
-	{
-		varArea = pow((areas[i] - avgArea) * areaDenom, 2);
-	}
-
-	totScore += sqrtf(varArea / (float)N);
-	return totScore;*/
-	return 0.0f;
+	int cover = cv::countNonZero(canvas);
+	float overlap = tot - cover;
+	cv::bitwise_and(canvas, shape.grayScale, canvas);
+	float inShape = cv::countNonZero(canvas);
+	float overlapTerm = overlap * letters.size() / (float)shape.area;
+	float fitTerm = abs(log(shape.area / inShape));
+	//std::cout << "dddddddddddddd: " << cover - inShape << std::endl;
+	float illAreaTerm = (cover - inShape) / (float)shape.area;
+	//std::cout << tot << "ccccccccccccccccccccccccc" << cover << std::endl;
+	return overlapTerm +fitTerm * 3.f + illAreaTerm * 2.f;
 }
 
 float LetterDeform::getScore(const std::vector<std::vector<vec2>>& ptsPos)
 {
-	return fitScore(ptsPos) + smoothFlowScore(ptsPos);
+	//float f = fitScore(ptsPos);
+	float s = smoothFlowScore(ptsPos);
+	return s;
+	//std::cout << f << "ccccccccccccccccccccccccc" << s * 80.f << std::endl;
+	//return fitScore(ptsPos) + smoothFlowScore(ptsPos);
+	//return smoothFlowScore(ptsPos);
 }
 
 LetterDeform::~LetterDeform() {
 	letters.clear();
 }
+
+
+
+
+
 
 Deform::Deform(const int sample,
 	const int iter,
@@ -98,6 +103,11 @@ Deform::Deform(const int sample,
 	this->maxIter = iter;
 	this->stepSize = step;
 	this->threshold = thresh;
+}
+
+void Deform::setStep(int step)
+{
+	this->stepSize = step;
 }
 
 void Deform::step(std::vector<std::vector<bool>>& bestDir)
@@ -143,4 +153,50 @@ void Deform::step(std::vector<std::vector<bool>>& bestDir)
 		ptsPos.clear();
 	}
 	std::cout << cost << std::endl;
+}
+
+
+void Deform::localStep(std::vector<std::vector<bool>>& bestDir)
+{
+	std::vector<std::vector<bool>> tmpDir;
+	for (int i = 0; i < letterDeform->letters.size(); i++)
+	{
+		tmpDir.push_back(std::vector<bool>(letterDeform->letters[i].controlPoints.size(), false));
+	}
+	
+	std::vector<std::vector<vec2>> ptsPos;
+	float inoutCost[2];
+	for (int j = 0; j < letterDeform->letters.size(); j++)
+	{
+		int letterLen = letterDeform->letters[j].controlPoints.size();
+		//std::cout << letterDeform->letters.size() << ",,, " << letterLen << std::endl;
+		for (int k = 0; k < letterLen; k++)
+		{
+			//std::cout << j << "," << k << std::endl;
+			for (int inout = 0; inout < 2; inout++)
+			{
+				for (int sz = 0; sz < letterDeform->letters.size(); sz++)
+				{
+					ptsPos.push_back(std::vector<vec2>());
+				}
+				//std::cout << inout << std::endl;
+				tmpDir[j][k] = inout;
+				for (int i = 0; i < letterDeform->letters.size(); i++)
+				{
+					letterDeform->letters[i].update(tmpDir[i], ptsPos[i], stepSize);
+				}
+				inoutCost[inout] = letterDeform->getScore(ptsPos);
+				ptsPos.clear();
+			}
+			if (inoutCost[0] > inoutCost[1])
+			{
+				tmpDir[j][k] = 1;
+			}
+			else
+			{
+				tmpDir[j][k] = 0;
+			}
+		}	
+	}
+	bestDir = tmpDir;
 }

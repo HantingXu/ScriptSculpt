@@ -305,7 +305,7 @@ float LetterAlignment::smoothFlowScore()
 
 float LetterAlignment::refinedAlignment()
 {
-	std::cout << 0.4f * aspectRatioScore() + 0.4f * fitScore() + 1.f * smoothFlowScore() << std::endl;
+	//std::cout << 0.4f * aspectRatioScore() + 0.4f * fitScore() + 1.f * smoothFlowScore() << std::endl;
 	return 0.4f * aspectRatioScore() + 0.4f * fitScore() + 1.f * smoothFlowScore();
 	//return smoothFlowScore();
 }
