@@ -153,7 +153,7 @@ void LetterAlignment::initialAlignment() {
 				rad = acosf(axis.dot(vec2(0, 1)));
 			}
 			rad *= sign;
-
+			letters[i].setOnProtrusion(true);
 			letters[i].setRotate(rad * 180.f / M_PI );
 			//std::cout << rad * 180.f / M_PI << std::endl;
 		}
@@ -303,7 +303,8 @@ void LetterAlignment::setLetters(const GASolution& sol)
 	{
 		letters[i].transform.ori = sol.var[i * 5] * TODEGREE;
 		letters[i].transform.scale = vec2(sol.var[i * 5 + 1], sol.var[i * 5 + 2]);
-		letters[i].transform.pos = vec2(sol.var[i * 5 + 3], sol.var[i * 5 + 4]);
+		if(!letters[i].getOnProtrusion())
+			letters[i].transform.pos = vec2(sol.var[i * 5 + 3], sol.var[i * 5 + 4]);
 	}
 }
 

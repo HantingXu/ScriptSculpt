@@ -106,12 +106,12 @@ Deform::Deform(const int sample,
 }
 
 
-void Deform::genRandSequence(int size, std::vector<int>& randSeq, bool rand)
+void Deform::genRandSequence(int size, std::vector<int>& randSeq, std::default_random_engine& rng, bool rand)
 {
 	for (int i = 0; i < size; i++)
 		randSeq.push_back(i);
 	if(rand)
-		std::random_shuffle(randSeq.begin(), randSeq.end());
+		std::shuffle(randSeq.begin(), randSeq.end(), rng);
 }
 
 void Deform::setStep(int step)
@@ -168,6 +168,7 @@ void Deform::step(std::vector<std::vector<int>>& bestDir)
 void Deform::localStep(std::vector<std::vector<int>>& bestDir, bool rand)
 {
 	std::vector<std::vector<int>> tmpDir;
+	auto rng = std::default_random_engine{};
 	for (int i = 0; i < letterDeform->letters.size(); i++)
 	{
 		tmpDir.push_back(std::vector<int>(letterDeform->letters[i].controlPoints.size(), 0));
@@ -179,7 +180,7 @@ void Deform::localStep(std::vector<std::vector<int>>& bestDir, bool rand)
 	for (int j = 0; j < letterDeform->letters.size(); j++)
 	{
 		int letterLen = letterDeform->letters[j].controlPoints.size();
-		genRandSequence(letterLen, randSeq, rand);
+		genRandSequence(letterLen, randSeq, rng, rand);
 		for (int k = 0; k < letterLen; k++)
 		{
 			int idx = randSeq[k];

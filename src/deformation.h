@@ -42,7 +42,7 @@ public:
 
 	void step(std::vector<std::vector<int>>& bestDir);
 	void localStep(std::vector<std::vector<int>>& bestDir, bool rand);
-	void genRandSequence(int size, std::vector<int>& randSeq, bool rand);
+	void genRandSequence(int size, std::vector<int>& randSeq, std::default_random_engine& rng, bool rand);
 	void setStep(int stepSize);
 	double computeCost();
 	void updateCtrlPoint();

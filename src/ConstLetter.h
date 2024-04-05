@@ -44,6 +44,7 @@ private:
 	ControlPoint* start;
 	float boundingArea;
 	mat3 getTransformMat();
+	bool onProtrusion;
 	int id;
 
 public:
@@ -61,9 +62,11 @@ public:
 	void setScale(float x, float y);
 	void setRotate(float angle);
 	void setTranslate(float x, float y);
+	void setOnProtrusion(bool onProtrus);
 
 	int getContour(cv::Mat& img, bool computeArea);
 	int getArea(cv::Mat&, const std::vector<vec2>& ptsPos);
+	bool getOnProtrusion();
 	void split();
 	void update(const std::vector<int>&, float miu);
 	void update(const std::vector<int>&, std::vector<vec2>& ptsPos, float miu);

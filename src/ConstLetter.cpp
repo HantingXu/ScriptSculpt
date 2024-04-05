@@ -868,6 +868,7 @@ Letter::Letter(char letter)
 	generateAnchorPoints(letter);
 	generateArea(letter);
 	this->id = letter;
+	this->onProtrusion = false;
 }
 
 Letter::~Letter() {
@@ -1020,6 +1021,16 @@ void Letter::setRotate(float angle) {
 
 void Letter::setTranslate(float x, float y) {
 	this->transform.pos = vec2(x, y);
+}
+
+void Letter::setOnProtrusion(bool onProtrus)
+{
+	this->onProtrusion = onProtrus;
+}
+
+bool Letter::getOnProtrusion()
+{
+	return this->onProtrusion;
 }
 
 mat3 Letter::getTransformMat() {
