@@ -164,9 +164,8 @@ int main()
 
     //std::cout << align.smoothFlowScore() << std::endl;
 
-    //utilityCore::solveGA(align);
     
-    /**
+    /*
     cv::Mat canvas = cv::Mat::zeros(imgShape.grayScale.size(), imgShape.grayScale.type());
     cv::Mat canvasTmp = cv::Mat::zeros(imgShape.grayScale.size(), imgShape.grayScale.type());
     for (int i = 0; i < align.letters.size(); i++)
@@ -193,22 +192,21 @@ int main()
         }
         std::cout << std::endl;
     }
-    for (int i = 0; i < 200; i++)
+    for (int i = 0; i < 20; i++)
     {
-        deform.localStep(sol);
+        deform.localStep(sol, true);
         letterDeform.updateLetter(sol, 5);
         
     }
-    
+    /*
     letterDeform.splitLetter();
-    deform.setStep(3);
+    deform.setStep(2);
     sol.clear();
     for (int i = 0; i < 25; i++)
     {
-        deform.localStep(sol);
-        letterDeform.updateLetter(sol, 3);
-    }
-
+        deform.localStep(sol, true);
+        letterDeform.updateLetter(sol, 2);
+    }*/
     cv::Mat canvas = cv::Mat::zeros(contourImg.size(), cv::COLOR_BGR2GRAY);
     for (int i = 0; i < letterDeform.letters.size(); i++) {
         letterDeform.letters[i].drawBezierCurve(contourImg);

@@ -244,31 +244,17 @@ float LetterAlignment::aspectRatioScore()
 	return abs(totScore) / letters.size();
 }
 
-float LetterAlignment::fitScore()
-{
-	float totScore = 0.0f;
-	cv::Mat canvas = cv::Mat::zeros(shape.grayScale.size(), shape.grayScale.type());
-	for (int i = 0; i < letters.size(); i++)
-	{
-		letters[i].getContour(canvas, false);
-	}
-	cv::bitwise_and(canvas, shape.grayScale, canvas);
-	float B = cv::countNonZero(canvas);
-	// B-A negative
-	return abs(log(shape.area / B));
-}
-
-float LetterAlignment::smoothFlowScore()
+float LetterAlignment::jointScore()
 {
 	int N = letters.size();
-	float totScore = 0.0f;
+	float smoothFlowTerm = 0.0f;
 	std::vector<float> areas;
 	std::vector<float> orientations;
 	float avgArea = 0.0f;
 	float areaDenom = N / (float)shape.area;
 	float avgOrient = 0.0f;
 	float overlap = 0.0f;
-	cv::Mat canvas = cv::Mat::zeros(shape.grayScale.size(), cv::COLOR_BGR2GRAY);
+	cv::Mat canvas = cv::Mat::zeros(shape.grayScale.size(), shape.grayScale.type());
 
 	for (int i = 0; i < N; i++)
 	{
@@ -283,31 +269,32 @@ float LetterAlignment::smoothFlowScore()
 	float cover = cv::countNonZero(canvas);
 	//is it really nessisary to /shape.area?
 	overlap = (overlap - cover) / (float)shape.area;
+
+	cv::bitwise_and(canvas, shape.grayScale, canvas);
+	float inShape = cv::countNonZero(canvas);
+
+	float fitTerm = abs(log(shape.area / inShape));
+	float illAreaTerm = (cover - inShape) / (float)shape.area;
+
 	avgArea /= (float)N;
 	avgOrient /= (float)N;
-	totScore += overlap;
+	smoothFlowTerm += overlap * 6.0f;
 
 	float varArea = 0.0f;
 	float varOrient = 0.0f;
 	for (int i = 0; i < N; i++)
 	{
-		varArea = pow((areas[i] - avgArea) * areaDenom, 2);
-		varOrient = pow(orientations[i] - avgOrient, 2);
+		varArea += pow((areas[i] - avgArea) * areaDenom, 2);
+		varOrient += pow(orientations[i] - avgOrient, 2);
 	}
-	/*
-	std::cout << "area:" << sqrtf(varArea / (float)N) << std::endl;
-	std::cout <<"oriant: " << sqrtf(varOrient / (float)N) << std::endl;
-	std::cout << "overlap: " << overlap << std::endl;*/
-	totScore += (sqrtf(varArea / (float)N) + sqrtf(varOrient / (float)N));
-	return totScore;
+	smoothFlowTerm += (sqrtf(varArea / (float)N) + sqrtf(varOrient / (float)N) * 0.6f);
+	return smoothFlowTerm * 0.4f + fitTerm + illAreaTerm * 2.5f;
 }
 
 
 float LetterAlignment::refinedAlignment()
 {
-	std::cout << 0.4f * aspectRatioScore() + 0.4f * fitScore() + 1.f * smoothFlowScore() << std::endl;
-	return 0.4f * aspectRatioScore() + 0.4f * fitScore() + 1.f * smoothFlowScore();
-	//return smoothFlowScore();
+	return 0.01f * aspectRatioScore() + 1.f * jointScore();
 }
 
 void LetterAlignment::setLetters(const GASolution& sol)

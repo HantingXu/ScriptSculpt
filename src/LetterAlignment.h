@@ -28,8 +28,7 @@ public:
 	float orientationComp(const Anchor& anchor, const Protrusion& protrusion);
 
 	float aspectRatioScore();
-	float fitScore();
-	float smoothFlowScore();
+	float jointScore();
 
 	void initialAlignment();
 	float refinedAlignment();

@@ -29,7 +29,7 @@ void LetterDeform::splitLetter()
 	for (int i = 0; i < letters.size(); i++)
 	{
 		letters[i].split();
-		//letters[i].checkOnShape(contour);
+		letters[i].checkOnShape(contour);
 	}
 }
 
@@ -105,6 +105,15 @@ Deform::Deform(const int sample,
 	this->threshold = thresh;
 }
 
+
+void Deform::genRandSequence(int size, std::vector<int>& randSeq, bool rand)
+{
+	for (int i = 0; i < size; i++)
+		randSeq.push_back(i);
+	if(rand)
+		std::random_shuffle(randSeq.begin(), randSeq.end());
+}
+
 void Deform::setStep(int step)
 {
 	this->stepSize = step;
@@ -156,7 +165,7 @@ void Deform::step(std::vector<std::vector<int>>& bestDir)
 }
 
 
-void Deform::localStep(std::vector<std::vector<int>>& bestDir)
+void Deform::localStep(std::vector<std::vector<int>>& bestDir, bool rand)
 {
 	std::vector<std::vector<int>> tmpDir;
 	for (int i = 0; i < letterDeform->letters.size(); i++)
@@ -166,32 +175,34 @@ void Deform::localStep(std::vector<std::vector<int>>& bestDir)
 	
 	std::vector<std::vector<vec2>> ptsPos;
 	std::array<float, 3> inoutCost;
+	std::vector<int> randSeq;
 	for (int j = 0; j < letterDeform->letters.size(); j++)
 	{
 		int letterLen = letterDeform->letters[j].controlPoints.size();
-		//std::cout << letterDeform->letters.size() << ",,, " << letterLen << std::endl;
+		genRandSequence(letterLen, randSeq, rand);
 		for (int k = 0; k < letterLen; k++)
 		{
-			//std::cout << j << "," << k << std::endl;
+			int idx = randSeq[k];
 			for (int inout = 0; inout < 3; inout++)
 			{
 				for (int sz = 0; sz < letterDeform->letters.size(); sz++)
 				{
 					ptsPos.push_back(std::vector<vec2>());
 				}
-				//std::cout << inout << std::endl;
-				tmpDir[j][k] = inout;
+				tmpDir[j][idx] = inout;
 				for (int i = 0; i < letterDeform->letters.size(); i++)
 				{
 					letterDeform->letters[i].update(tmpDir[i], ptsPos[i], stepSize);
 				}
 				inoutCost[inout] = letterDeform->getScore(ptsPos);
 				ptsPos.clear();
+				
 			}
 			auto minIt = std::min_element(inoutCost.begin(), inoutCost.end());
 			size_t index = std::distance(inoutCost.begin(), minIt);
-			tmpDir[j][k] = index;
-		}	
+			tmpDir[j][idx] = index;
+		}
+		randSeq.clear();
 	}
 	bestDir = tmpDir;
 }
