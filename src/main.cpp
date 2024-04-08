@@ -192,30 +192,37 @@ int main()
         }
         std::cout << std::endl;
     }
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < 200; i++)
     {
         deform.localStep(sol, true);
         letterDeform.updateLetter(sol, 5);
         
     }
+    
+    cv::Mat canvas1 = contourImg.clone();
+    for (int i = 0; i < letterDeform.letters.size(); i++) {
+        letterDeform.letters[i].drawBezierCurve(canvas1);
+        //letterDeform.letters[i].getContour(canvas1, false);
+    }
+    cv::imshow("Bezier Curve13", canvas1);
     /*
     letterDeform.splitLetter();
-    deform.setStep(2);
+    deform.setStep(1);
     sol.clear();
-    for (int i = 0; i < 25; i++)
+    for (int i = 0; i < 90; i++)
     {
         deform.localStep(sol, true);
-        letterDeform.updateLetter(sol, 2);
-    }*/
+        letterDeform.updateLetter(sol, 1);
+    }
     cv::Mat canvas = cv::Mat::zeros(contourImg.size(), cv::COLOR_BGR2GRAY);
     for (int i = 0; i < letterDeform.letters.size(); i++) {
         letterDeform.letters[i].drawBezierCurve(contourImg);
         letterDeform.letters[i].getContour(canvas, false);
     }
 
-    letterDeform.post();
+    //letterDeform.post();
     cv::imshow("Bezier Curve", canvas);
-    cv::imshow("Bezier Curvecc", contourImg);
+    cv::imshow("Bezier Curvecc", contourImg);*/
     
     /*
     std::vector<bool> v = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

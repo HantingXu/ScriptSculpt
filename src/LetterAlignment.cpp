@@ -139,7 +139,7 @@ void LetterAlignment::initialAlignment() {
 					}
 				}
 			}
-			vec2 delta = protrusionCtr - anchorPos;
+			vec2 delta = protrusionCtr;// - anchorPos;
 			letters[i].setTranslate(delta.x(), delta.y());
 			//letters[i].setTranslate(protrusionPos.x(), protrusionPos.y());
 			locations.push_back(protrusion.projection);
@@ -288,7 +288,7 @@ float LetterAlignment::jointScore()
 		varOrient += pow(orientations[i] - avgOrient, 2);
 	}
 	smoothFlowTerm += (sqrtf(varArea / (float)N) + sqrtf(varOrient / (float)N) * 0.6f);
-	return smoothFlowTerm * 0.4f + fitTerm + illAreaTerm * 2.5f;
+	return smoothFlowTerm * 0.4f + fitTerm + illAreaTerm * 4.5f;
 }
 
 
