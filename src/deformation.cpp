@@ -208,11 +208,61 @@ void Deform::localStep(std::vector<std::vector<int>>& bestDir, bool rand)
 	bestDir = tmpDir;
 }
 
-void LetterDeform::post() {
+std::vector<vec2> calculateBezierPoints2(const std::vector<vec2>& controlPoints, int numPoints) {
+	std::vector<vec2> curvePoints;
+	for (int i = 0; i <= numPoints; ++i) {
+		float t = float(i) / numPoints;
+		float one_minus_t = 1.0f - t;
+		vec2 point = one_minus_t * one_minus_t * one_minus_t * controlPoints[0] +
+			3 * one_minus_t * one_minus_t * t * controlPoints[1] +
+			3 * one_minus_t * t * t * controlPoints[2] +
+			t * t * t * controlPoints[3];
+		curvePoints.push_back(point);
+	}
+	return curvePoints;
+}
+
+void drawBezierCurve(Letter &l, std::vector<vec2> &pointss, cv::Mat& image) {
+	std::cout << l.transform.ori << std::endl;
+	std::cout << l.transform.scale << std::endl;
+	std::cout << l.transform.pos << std::endl;
+	for (int i = 0; i < pointss.size(); i += 4) {
+		std::vector<vec3> controlPointsTransformed;
+		for (int j = 0; j < 4; j++) {
+			vec3 point = vec3(pointss[i + j].x(), -pointss[i + j].y(), 1);
+			controlPointsTransformed.push_back(l.getTransformMat() * point);
+		}
+		std::vector<vec2> points;
+		points.push_back(vec2(controlPointsTransformed[0].x(), controlPointsTransformed[0].y()));
+		points.push_back(vec2(controlPointsTransformed[1].x(), controlPointsTransformed[1].y()));
+		points.push_back(vec2(controlPointsTransformed[2].x(), controlPointsTransformed[2].y()));
+		points.push_back(vec2(controlPointsTransformed[3].x(), controlPointsTransformed[3].y()));
+		std::vector<vec2> curvePoints = calculateBezierPoints2(points, 100);
+		//cv::Scalar color = cv::Scalar(rand() % 256, rand() % 256, rand() % 256);
+		cv::Scalar color = cv::Scalar(255, 255, 255);
+		for (size_t i = 0; i < curvePoints.size() - 1; ++i) {
+			cv::line(image,
+				cv::Point(curvePoints[i][0], curvePoints[i][1]),
+				cv::Point(curvePoints[i + 1][0], curvePoints[i + 1][1]),
+				color, 2);
+		}
+	}
+}
+
+void LetterDeform::post(cv::Mat& image) {
 	for (int i = 0; i < letters.size(); i++) {
+		if (letters[i].id == 'B') {
+			std::vector<vec2> points = {
+				vec2(112.9701620134295, -51.145695239910864), vec2(71.37915709306242, -51.145695239910864), vec2(47.21141099068696, -80.93384741260621), vec2(47.21141099068696, -116.34240565562142),
+				vec2(47.21141099068696, -116.34240565562142), vec2(47.21141099068696, -152.8750451127006), vec2(71.37915709306242, -180.9770754643), vec2(112.9701620134295, -180.9770754643),
+				vec2(112.9701620134295, -180.9770754643), vec2(154.56116693379658, -180.9770754643), vec2(178.72891303617203, -152.8750451127006), vec2(178.72891303617203, -116.34240565562142),
+				vec2(178.72891303617203, -116.34240565562142), vec2(178.72891303617203, -80.93384741260621), vec2(154.56116693379658, -51.145695239910864), vec2(112.9701620134295, -51.145695239910864)};
+			drawBezierCurve(letters[i], points, image);
+		}
 		for (int j = 0; j < letters[i].controlPoints.size(); j++) {
 			ControlPoint* p = letters[i].controlPoints[j].get();
-			p->pos = p->pos - p->normal * 20;
+			//shrink letter boundary
+			if (!p->isFixed) p->pos = p->pos - p->normal * 20;
 		}
 	}
 }

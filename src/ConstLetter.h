@@ -39,11 +39,10 @@ public:
 class Letter {
 private:
 	std::vector<Anchor> anchors;
-	Transform transform;
+	//Transform transform;
 	std::vector<sPtr<ControlPoint>> controlPoints;
 	ControlPoint* start;
 	float boundingArea;
-	mat3 getTransformMat();
 	bool onProtrusion;
 	int id;
 
@@ -51,6 +50,8 @@ public:
 	Letter();
 	Letter(char letter);
 	~Letter();
+	Transform transform;
+	mat3 getTransformMat();
 	void generateControlPoints(char letter);
 	void generateArea(char letter);
 	void generateAnchorPoints(char letter);

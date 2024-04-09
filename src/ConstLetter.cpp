@@ -1200,16 +1200,16 @@ bool ControlPoint::checkFixed(cv::Mat& contour)
 	int height = contour.size().height;
 	int x = this->pos.x();
 	int y = this->pos.y();
-	int minX = std::max(x - 5, 0);
-	int maxX = std::min(x + 5, width);
-	int minY = std::max(y - 5, 0);
-	int maxY = std::min(y + 5, height);
+	int threshold = 3;
+	int minX = std::max(x - threshold, 0);
+	int maxX = std::min(x + threshold, width);
+	int minY = std::max(y - threshold, 0);
+	int maxY = std::min(y + threshold, height);
 	for (int i = minX; i < maxX; i++)
 	{
 		for (int j = minY; j < maxY; j++)
 		{
-			if (contour.at<int>(y, x) != 0)
-			{
+			if (contour.at<uchar>(j, i) != 0){
 				this->isFixed = true;
 				return true;
 			}

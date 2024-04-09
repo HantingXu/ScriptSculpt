@@ -22,7 +22,7 @@ public:
 	float smoothFlowScore(const std::vector<std::vector<vec2>>& ptsPos);
 	float getScore(const std::vector<std::vector<vec2>>& ptsPos);
 
-	void post();
+	void post(cv::Mat& image);
 };
 
 class Deform

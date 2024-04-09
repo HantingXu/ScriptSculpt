@@ -181,7 +181,7 @@ int main()
     
     LetterDeform letterDeform = LetterDeform(align.letters, imgShape, ctrImg);
     letterDeform.updateNormal();;
-    Deform deform = Deform(40000, 10, 5, 0.025, &letterDeform);
+    Deform deform = Deform(40000, 10, 2.5, 0.025, &letterDeform);
     std::vector<std::vector<int>> sol;
     
     for (int i = 0; i < sol.size(); i++)
@@ -192,19 +192,23 @@ int main()
         }
         std::cout << std::endl;
     }
-    for (int i = 0; i < 200; i++)
+    for (int i = 0; i < 400; i++)
     {
         deform.localStep(sol, true);
-        letterDeform.updateLetter(sol, 5);
+        letterDeform.updateLetter(sol, 2.5);
         
     }
-    
+
+
     cv::Mat canvas1 = contourImg.clone();
+    cv::Mat canvas2 = contourImg.clone();
+    letterDeform.post(canvas1);
     for (int i = 0; i < letterDeform.letters.size(); i++) {
         letterDeform.letters[i].drawBezierCurve(canvas1);
-        //letterDeform.letters[i].getContour(canvas1, false);
+        letterDeform.letters[i].getContour(canvas2, false);
     }
     cv::imshow("Bezier Curve13", canvas1);
+    cv::imshow("Bezier Curve14", canvas2);
     /*
     letterDeform.splitLetter();
     deform.setStep(1);
