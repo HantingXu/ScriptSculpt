@@ -29,6 +29,8 @@ Before Cmake, please download opencv 4.80 and set the opencv lib directory as Op
 
 ![](./visualization/packing/postprocess1.png)
 
+![](./visualization/packing/postprocess2.png)
+
 ## Alpha Version Visualization
 - **Bezier Curve Representation of English letters** (Week of Mar 11th)
     * For consistency, only Bezier curve segments of degree 3 is used, including the representation of straight lines. This allows for letter deformation later.
