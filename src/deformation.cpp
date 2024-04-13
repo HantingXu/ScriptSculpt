@@ -249,6 +249,7 @@ void drawBezierCurve(Letter &l, std::vector<vec2> &pointss, cv::Mat& image) {
 	}
 }
 
+
 void LetterDeform::post(cv::Mat& image) {
 	for (int i = 0; i < letters.size(); i++) {
 		if (letters[i].id == 'B') {
@@ -259,10 +260,28 @@ void LetterDeform::post(cv::Mat& image) {
 				vec2(178.72891303617203, -116.34240565562142), vec2(178.72891303617203, -80.93384741260621), vec2(154.56116693379658, -51.145695239910864), vec2(112.9701620134295, -51.145695239910864)};
 			drawBezierCurve(letters[i], points, image);
 		}
-		for (int j = 0; j < letters[i].controlPoints.size(); j++) {
+	}
+	for (int i = 0; i < this->letters.size(); i++) {
+		mat3 rot;
+		Transform transform = this->letters[i].transform;
+		float rad = transform.ori * M_PI / 180.0;
+		rot << cos(rad), -sin(rad), 0,
+			   sin(rad), cos(rad), 0,
+			   0, 0, 1;
+		for (int j = 0; j < this->letters[i].controlPoints.size(); j++) {
+			vec2 normal = this->letters[i].controlPoints[j]->normal;
+			vec3 normalHom = vec3(normal.x(), normal.y(), 1.f);
+			normalHom = rot * normalHom;
+			float nx = normalHom.x();
+			float ny = normalHom.y();
+			normal = vec2(nx, ny);
+			normal.normalize();
+			this->letters[i].controlPoints[j]->normal = normal;
 			ControlPoint* p = letters[i].controlPoints[j].get();
 			//shrink letter boundary
-			if (!p->isFixed) p->pos = p->pos - p->normal * 20;
+			float movex = 2.5f / this->letters[i].transform.scale.x();
+			float movey = 2.5f / this->letters[i].transform.scale.y();
+			if (!p->isFixed) p->pos = p->pos - vec2(p->normal.x()*movex, p->normal.y()*movey);
 		}
 	}
 }

@@ -178,7 +178,7 @@ int main()
     **/
     //std::vector<Letter> let = { align.letters[0], align.letters[3] };
     
-    
+    align.letters[0].split();
     LetterDeform letterDeform = LetterDeform(align.letters, imgShape, ctrImg);
     letterDeform.updateNormal();;
     Deform deform = Deform(40000, 10, 2.5, 0.025, &letterDeform);
@@ -205,6 +205,7 @@ int main()
     letterDeform.post(canvas1);
     for (int i = 0; i < letterDeform.letters.size(); i++) {
         letterDeform.letters[i].drawBezierCurve(canvas1);
+        //letterDeform.letters[i].drawNormal(canvas1);
         letterDeform.letters[i].getContour(canvas2, false);
     }
     cv::imshow("Bezier Curve13", canvas1);
