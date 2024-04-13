@@ -8,18 +8,18 @@ Before Cmake, please download opencv 4.80 and set the opencv lib directory as Op
 
 ![](./visualization/initial/initialAlignment.png)
 
-    * Anchor-Protrusion Correspondence
-        * Each protrusion is possibly matched with an anchor based on the loacation and orientation compatibility score.
-    * Initial Placement
-        * First position letters that have a match with protrusion.
-        * Then position other letters, keeping them as evenly spaced as possible.
+* Anchor-Protrusion Correspondence
+    * Each protrusion is possibly matched with an anchor based on the loacation and orientation compatibility score.
+* Initial Placement
+    * First position letters that have a match with protrusion.
+    * Then position other letters, keeping them as evenly spaced as possible.
         
 - **Refined Alignment** (Week of Mar 25th)
 
 ![](./visualization/initial/refinedAlignment.png)
 
-    * Using GA, find the best alignment that minimize the combined layout energy.
-    * No control point deformation so far.
+* Using GA, find the best alignment that minimize the combined layout energy.
+* No control point deformation so far.
 
 - **Letter Deformation** (Week of April 1st)
 
