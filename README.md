@@ -5,6 +5,7 @@ Before Cmake, please download opencv 4.80 and set the opencv lib directory as Op
 
 ## Beta Version Visualization
 - **Initial Alignment** (Week of Mar 25th)
+
 ![](./visualization/initial/initialAlignment.png)
 
     * Anchor-Protrusion Correspondence
@@ -14,6 +15,7 @@ Before Cmake, please download opencv 4.80 and set the opencv lib directory as Op
         * Then position other letters, keeping them as evenly spaced as possible.
         
 - **Refined Alignment** (Week of Mar 25th)
+
 ![](./visualization/initial/refinedAlignment.png)
 
     * Using GA, find the best alignment that minimize the combined layout energy.
@@ -23,7 +25,7 @@ Before Cmake, please download opencv 4.80 and set the opencv lib directory as Op
 
 ![](./visualization/packing/packing.png)
 
-- **Letter Deformation Refiend & Initial Post Processing** (Week of April 8th)
+- **Letter Deformation Refined & Initial Post Processing** (Week of April 8th)
 
 ![](./visualization/packing/postprocess1.png)
 
