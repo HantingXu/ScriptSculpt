@@ -19,6 +19,18 @@ void utilityCore::extractContour(const cv::Mat& thresh, cv::Mat& outImg, std::ve
     contour = contours[0];
 }
 
+void utilityCore::extractContour(const cv::Mat& thresh, cv::Mat& outImg, std::vector<cv::Point>& contour, const Scalar& color)
+{
+    std::vector<std::vector<Point>> contours;
+    std::vector<Vec4i> hierarchy;
+    findContours(thresh, contours, hierarchy, RETR_TREE, CHAIN_APPROX_NONE);
+    outImg.setTo(Scalar::all(0));
+    if (!contours.empty()) {
+        drawContours(outImg, contours, 0, color, 2);
+        contour = contours[0];
+    }
+}
+
 
 void utilityCore::genMask(const cv::Mat& input, cv::Mat& mask)
 {
@@ -214,7 +226,7 @@ void utilityCore::genProtrusions(cv::Mat& protruImg, cv::Mat& nProImg, std::vect
 
     }
 
-    cv::imshow("protrus", t);
+    //cv::imshow("protrus", t);
 }
 
 void utilityCore::getLongestPath(const std::vector<std::vector<Vec3i>>& graph, int& maxPath, std::vector<int>& path)

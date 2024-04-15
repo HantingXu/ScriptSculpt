@@ -168,6 +168,7 @@ void LetterAlignment::initialAlignment() {
 	int endIdx;
 	bool isCounting = false;
 	std::vector<int> indices;
+	int space = -1;
 	for (int i = 0; i < locations.size(); i++) {
 		if (locations[i] == -1) {
 			if (i == 0) {
@@ -188,7 +189,7 @@ void LetterAlignment::initialAlignment() {
 				endIdx = i;
 				int length = end - start;
 				int num = endIdx - startIdx - 1;
-				int space = length / (num + 1);
+				space = length / (num + 1);
 				int count = 1;
 				for (int j = startIdx + 1; j < endIdx; j++){
 					locations[j] = start + count * space;
@@ -200,13 +201,15 @@ void LetterAlignment::initialAlignment() {
 		}
 	}
 	if (isCounting) {
-		end = midPoints.size() - 1;
+		end = this->shape.centerline.size() - 1;
 		endIdx = locations.size() - 1;
-		int length = end - start;
-		int num = endIdx - startIdx - 1;
-		int space = length / (num + 1);
+		//int length = end - start;
+		//int num = endIdx - startIdx - 1;
+		if (space == -1) {
+			space = (end - start) / (this->letters.size() - 1);
+		}
 		int count = 1;
-		for (int j = startIdx + 1; j < endIdx; j++) {
+		for (int j = startIdx + 1; j <= endIdx; j++) {
 			locations[j] = start + count * space;
 			indices.push_back(j);
 			count++;

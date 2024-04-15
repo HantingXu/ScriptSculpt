@@ -8,6 +8,7 @@
 namespace utilityCore
 {
 	extern void extractContour(const cv::Mat& thresh, cv::Mat& outImg, std::vector<cv::Point>& contour);
+	extern void extractContour(const cv::Mat& thresh, cv::Mat& outImg, std::vector<cv::Point>& contour, const cv::Scalar& color);
 
 	extern void genMask(const cv::Mat& input, cv::Mat& mask);
 	extern void genProtrusions(cv::Mat& preData, cv::Mat& nProImg, std::vector<Protrusion>& protrustions);

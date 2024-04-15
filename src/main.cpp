@@ -21,6 +21,7 @@ int main()
 #define thinning 1
 #if thinning
     cv::Mat src = cv::imread("../img/bunny.jpg");
+    cv::resize(src, src, cv::Size(400, 400));
     cv::Mat gray;
     cv::cvtColor(src, gray, COLOR_BGR2GRAY);
     cv::threshold(gray, gray, 170, 255, THRESH_BINARY_INV);
@@ -65,7 +66,7 @@ int main()
         cv::circle(skeletonImg, centerline[j], 3, 255, 1);
         std::cout << centerline[j] << std::endl;
     }
-    cv::imshow("skeleton", skeletonImg);
+    //cv::imshow("skeleton", skeletonImg);
     imgShape.centerline = centerline;
 
     //compute protrusion poisition on centerline
@@ -134,14 +135,14 @@ int main()
     ConstLetters l = ConstLetters();
     std::vector<Letter> letters;
 
-    cv::Mat image(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
-    Letter l1 = l.getLetter('B');
-    Letter l2 = l.getLetter('U');
-    Letter l3 = l.getLetter('N');
-    Letter l4 = l.getLetter('N');
-    Letter l5 = l.getLetter('Y');
+    cv::Mat image(400, 400, CV_8UC3, cv::Scalar(0, 0, 0));
+    Letter l1 = Letter('B');
+    Letter l2 = Letter('U');
+    Letter l3 = Letter('N');
+    Letter l4 = Letter('N');
+    Letter l5 = Letter('Y');
     //Letter l6 = l.getLetter('Y');
-    //Letter l7 = l.getLetter('O');
+    //Letter l7 = l.getLetter('N');
     //Letter l8 = l.getLetter('O');
     letters.push_back(l1);
     letters.push_back(l2);
@@ -157,28 +158,17 @@ int main()
     align.initialAlignment();
     utilityCore::solveGA(align);
     cv::Mat mss = contourImg.clone();
+    vec3 c1 = vec3(255, 255, 255);
     for (int i = 0; i < align.letters.size(); i++) {
-        align.letters[i].drawBezierCurve(mss);
+        align.letters[i].drawBezierCurve(mss, c1);
     }
     cv::imshow("Bezier Curve1", mss);
-
-    //std::cout << align.smoothFlowScore() << std::endl;
-
     
-    /*
-    cv::Mat canvas = cv::Mat::zeros(imgShape.grayScale.size(), imgShape.grayScale.type());
-    cv::Mat canvasTmp = cv::Mat::zeros(imgShape.grayScale.size(), imgShape.grayScale.type());
-    for (int i = 0; i < align.letters.size(); i++)
-    {
-        align.letters[i].getContour(canvas, false);
-    }
-    cv::bitwise_and(canvas, imgShape.grayScale, canvasTmp);
-    cv::bitwise_xor(canvas, canvasTmp, canvasTmp);
-    cv::imshow("Bezier Curve", canvasTmp);
-    **/
-    //std::vector<Letter> let = { align.letters[0], align.letters[3] };
-    
+    //align.letters[0].split();
+    //align.letters[0].split();
     align.letters[0].split();
+#define deforml 1
+#if deforml
     LetterDeform letterDeform = LetterDeform(align.letters, imgShape, ctrImg);
     letterDeform.updateNormal();;
     Deform deform = Deform(40000, 10, 2.5, 0.025, &letterDeform);
@@ -202,14 +192,29 @@ int main()
 
     cv::Mat canvas1 = contourImg.clone();
     cv::Mat canvas2 = contourImg.clone();
+
+    Mat contourImgColor = Mat::zeros(gray.size(), CV_8UC3);
+
+    // Extract and draw contour in grayscale
+    std::vector<Point> contourColor;
+    Scalar color(255, 255, 255); // Green color for the contour
+    utilityCore::extractContour(gray, contourImgColor, contourColor, color);
+
     letterDeform.post(canvas1);
     for (int i = 0; i < letterDeform.letters.size(); i++) {
-        letterDeform.letters[i].drawBezierCurve(canvas1);
+        letterDeform.letters[i].getContour(image, false, vec3(147, 20, 255));
+        letterDeform.letters[i].drawBezierCurve(image, vec3(255));
         //letterDeform.letters[i].drawNormal(canvas1);
-        letterDeform.letters[i].getContour(canvas2, false);
     }
-    cv::imshow("Bezier Curve13", canvas1);
-    cv::imshow("Bezier Curve14", canvas2);
+    for (int i = 0; i < letterDeform.letters.size(); i++) {
+        letterDeform.letters[i].getContour(contourImgColor, false, vec3(147, 20, 255));
+        letterDeform.letters[i].drawBezierCurve(contourImgColor, vec3(255));
+        //letterDeform.letters[i].drawNormal(canvas1);
+    }
+    //cv::imshow("contour", canvas1);
+    cv::imshow("WithContour", contourImgColor);
+    cv::imshow("NoContour", image);
+#endif
     /*
     letterDeform.splitLetter();
     deform.setStep(1);
@@ -246,6 +251,19 @@ int main()
     }
     cv::imshow("Bezier Curve", contourImg);
    */
+
+   /*
+    cv::Mat canvas = cv::Mat::zeros(imgShape.grayScale.size(), imgShape.grayScale.type());
+    cv::Mat canvasTmp = cv::Mat::zeros(imgShape.grayScale.size(), imgShape.grayScale.type());
+    for (int i = 0; i < align.letters.size(); i++)
+    {
+        align.letters[i].getContour(canvas, false);
+    }
+    cv::bitwise_and(canvas, imgShape.grayScale, canvasTmp);
+    cv::bitwise_xor(canvas, canvasTmp, canvasTmp);
+    cv::imshow("Bezier Curve", canvasTmp);
+    **/
+    //std::vector<Letter> let = { align.letters[0], align.letters[3] };
     cv::waitKey(0);
 #endif
     return 0;

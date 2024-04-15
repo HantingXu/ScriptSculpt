@@ -41,6 +41,7 @@ private:
 	std::vector<Anchor> anchors;
 	//Transform transform;
 	std::vector<sPtr<ControlPoint>> controlPoints;
+	std::vector<sPtr<ControlPoint>> innerPoints;
 	ControlPoint* start;
 	float boundingArea;
 	bool onProtrusion;
@@ -55,7 +56,7 @@ public:
 	void generateControlPoints(char letter);
 	void generateArea(char letter);
 	void generateAnchorPoints(char letter);
-	void drawBezierCurve(cv::Mat&);
+	void drawBezierCurve(cv::Mat&, vec3);
 	void drawAnchors(cv::Mat&);
 	void drawControlPoints(cv::Mat&);
 	void Letter::drawNormal(cv::Mat& image);
@@ -66,6 +67,7 @@ public:
 	void setOnProtrusion(bool onProtrus);
 
 	int getContour(cv::Mat& img, bool computeArea);
+	int getContour(cv::Mat& img, bool computeArea, vec3 brg);
 	int getArea(cv::Mat&, const std::vector<vec2>& ptsPos);
 	bool getOnProtrusion();
 	void split();

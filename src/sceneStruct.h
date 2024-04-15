@@ -43,11 +43,11 @@ struct ImgShape
 
 struct GASolution
 {
-	std::vector<float> var = std::vector<float>(30);
+	std::vector<float> var = std::vector<float>(50);
 	GASolution()
 	{
 		//maximum 10 letters
-		var.reserve(30);
+		var.reserve(50);
 	}
 	std::string to_string() const
 	{
