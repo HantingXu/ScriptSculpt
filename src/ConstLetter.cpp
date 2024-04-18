@@ -1295,7 +1295,7 @@ int Letter::getContour(cv::Mat& img, bool computeArea, vec3 brg) {
 	float x = brg.x();
 	float y = brg.y();
 	float z = brg.z();
-	cv::Scalar color = cv::Scalar(x, y , z);
+	cv::Scalar color = cv::Scalar(x, y, z);
 	cv::drawContours(img, letter, -1, color, -1);
 	//cv::imshow("test", img);
 

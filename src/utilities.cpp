@@ -19,14 +19,14 @@ void utilityCore::extractContour(const cv::Mat& thresh, cv::Mat& outImg, std::ve
     contour = contours[0];
 }
 
-void utilityCore::extractContour(const cv::Mat& thresh, cv::Mat& outImg, std::vector<cv::Point>& contour, const Scalar& color)
+void utilityCore::extractContour(const cv::Mat& thresh, cv::Mat& outImg, std::vector<cv::Point>& contour, const Scalar& fontColor, const Scalar& backColor)
 {
     std::vector<std::vector<Point>> contours;
     std::vector<Vec4i> hierarchy;
     findContours(thresh, contours, hierarchy, RETR_TREE, CHAIN_APPROX_NONE);
-    outImg.setTo(Scalar::all(0));
+    outImg.setTo(backColor);
     if (!contours.empty()) {
-        drawContours(outImg, contours, 0, color, 2);
+        drawContours(outImg, contours, 0, fontColor, 2);
         contour = contours[0];
     }
 }
@@ -578,4 +578,94 @@ void utilityCore::solveGA(LetterAlignment& align)
     std::cout << ga_obj.last_generation.chromosomes[idx].genes.to_string() << std::endl;
     std::cout << ga_obj.last_generation.chromosomes[idx].middle_costs.objective1 << std::endl;
     align.setLetters(ga_obj.last_generation.chromosomes[idx].genes);
+}
+
+void utilityCore::genMayaImage(const std::string& shapePath, const std::string& word, const vec3& fontColor, const vec3& backColor, cv::Mat& outputImg)
+{
+
+    cv::Mat src = cv::imread(shapePath);
+    cv::resize(src, src, cv::Size(400, 400));
+    cv::Mat gray;
+    cv::cvtColor(src, gray, COLOR_BGR2GRAY);
+    cv::threshold(gray, gray, 170, 255, THRESH_BINARY_INV);
+    ImgShape imgShape;
+    imgShape.grayScale = gray;
+
+    //extract contour
+    std::vector<Point> contour;
+    cv::Mat contourImg = cv::Mat::zeros(gray.size(), gray.type());
+    utilityCore::extractContour(gray, contourImg, contour);
+    cv::Mat ctrImg = contourImg.clone();
+    imgShape.contour = contour;
+    imgShape.area = cv::contourArea(contour);
+
+    //extract protrusions
+    cv::Mat mask;
+    std::vector<Protrusion> protrusions;
+    utilityCore::genMask(gray, mask);
+    cv::Mat protruImg = cv::Mat::zeros(gray.size(), gray.type());
+    contourImg.copyTo(protruImg, mask);
+    cv::Mat nProtrusion = cv::Mat::zeros(gray.size(), gray.type());;
+    utilityCore::genProtrusions(protruImg, nProtrusion, protrusions);
+
+    //generate skeleton
+    std::vector<Point> centerline;
+
+    nProtrusion = 255 - nProtrusion - contourImg;
+    gray.copyTo(nProtrusion, nProtrusion);
+    //cv::imshow("no protrusions", nProtrusion);
+    cv::Mat skeletonImg = cv::Mat::zeros(gray.size(), gray.type());
+    utilityCore::genSkeleton(nProtrusion.clone(), centerline);
+    imgShape.centerline = centerline;
+
+    //compute protrusion poisition on centerline
+    utilityCore::processProtrusions(centerline, protrusions);
+    imgShape.protrusions = protrusions;
+
+    ConstLetters l = ConstLetters();
+    std::vector<Letter> letters;
+
+    cv::Mat image(400, 400, CV_8UC3, cv::Scalar(backColor[0], backColor[1], backColor[2]));
+    for (int i = 0; i < word.size(); i++)
+    {
+        letters.push_back(Letter(word.at(i)));
+    }
+
+    LetterAlignment align = LetterAlignment(letters, imgShape);
+    align.initialAlignment();
+    utilityCore::solveGA(align);
+
+    align.letters[0].split();
+
+    LetterDeform letterDeform = LetterDeform(align.letters, imgShape, ctrImg);
+    letterDeform.updateNormal();;
+    Deform deform = Deform(40000, 10, 2.5, 0.025, &letterDeform);
+    std::vector<std::vector<int>> sol;
+
+    for (int i = 0; i < 150; i++)
+    {
+        deform.localStep(sol, true);
+        letterDeform.updateLetter(sol, 2.5);
+    }
+
+
+    cv::Mat canvas1 = contourImg.clone();
+    cv::Mat canvas2 = contourImg.clone();
+
+    Mat contourImgColor = Mat::zeros(gray.size(), CV_8UC3);
+
+    // Extract and draw contour in grayscale
+    std::vector<Point> contourColor;
+    Scalar color(255, 255, 255); // Green color for the contour
+    cv::Scalar backgroundCol = cv::Scalar(backColor[0], backColor[1], backColor[2]);
+    utilityCore::extractContour(gray, contourImgColor, contourColor, color, backgroundCol);
+
+    letterDeform.post(canvas1);
+
+    for (int i = 0; i < letterDeform.letters.size(); i++) {
+        letterDeform.letters[i].getContour(contourImgColor, false, fontColor);
+        letterDeform.letters[i].drawBezierCurve(contourImgColor, backColor);
+        //letterDeform.letters[i].drawNormal(canvas1);
+    }
+    outputImg = contourImgColor;
 }

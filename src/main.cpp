@@ -8,6 +8,7 @@
 #include "sceneStruct.h"
 #include "GASolver.h"
 #include "deformation.h"
+
 using namespace cv;
 using Eigen::MatrixXd;
 
@@ -198,7 +199,7 @@ int main()
     // Extract and draw contour in grayscale
     std::vector<Point> contourColor;
     Scalar color(255, 255, 255); // Green color for the contour
-    utilityCore::extractContour(gray, contourImgColor, contourColor, color);
+    utilityCore::extractContour(gray, contourImgColor, contourColor, color, cv::Scalar::all(0));
 
     letterDeform.post(canvas1);
     for (int i = 0; i < letterDeform.letters.size(); i++) {

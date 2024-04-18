@@ -4,12 +4,15 @@ project(scriptsculpt)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+set(MAYA_LOCATION "C:\\Program Files\\Autodesk\\Maya2024")
+set(MAYA_PLUGIN_OUTPUT_DIR "C:\\Users\\2000\\devkitBase\\plug-ins\\plug-ins")
+
+set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 ########################################
 # EIGEN Setup
 ########################################
@@ -44,35 +47,54 @@ FIND_PACKAGE( OpenCV REQUIRED )
 INCLUDE_DIRECTORIES( ${OpenCV_INCLUDE_DIRS} )       
 ########### end ##########################
 
-set(headers
-    src/utilities.h
-    src/ConstLetter.h
-    src/sceneStruct.h
-    src/LetterAlignment.h
-    src/openGA.hpp
-    src/GASolver.h
-    src/deformation.h
-    )
+find_package(Maya REQUIRED)
 
-set(sources
-    src/main.cpp
-    src/utilities.cpp
-    src/ConstLetter.cpp
-    src/trace_skeleton.cpp
-    src/LetterAlignment.cpp
-    src/GASolver.cpp
-    src/deformation.cpp
-    )
+###########################################
 
-list(SORT headers)
-list(SORT sources)
+file(GLOB SOURCE_FILES ${SRC_DIR}/*.h
+    ${SRC_DIR}/*.cpp)
 
-source_group(Headers FILES ${headers})
-source_group(Sources FILES ${sources})
+############################################
+#set(headers
+#    src/utilities.h
+#    src/ConstLetter.h
+#    src/sceneStruct.h
+#    src/LetterAlignment.h
+#    src/openGA.hpp
+#    src/GASolver.h
+#    src/deformation.h
+#    src/ScriptSculptCommand.h
+#    )
 
-add_executable(${CMAKE_PROJECT_NAME} ${sources} ${headers})
+#set(sources
+#    #src/main.cpp
+#    src/PluginMain.cpp
+#    src/utilities.cpp
+#    src/ConstLetter.cpp
+#    src/trace_skeleton.cpp
+#    src/LetterAlignment.cpp
+#    src/GASolver.cpp
+#    src/deformation.cpp
+#    src/ScriptSculptCommand.cpp
+#    )
+#
+#list(SORT headers)
+#Alist(SORT sources)
+#
+#source_group(Headers FILES ${headers})
+#source_group(Sources FILES ${sources})
+#
+#add_executable(${CMAKE_PROJECT_NAME} ${sources} ${headers})
+###################################
+add_library(${CMAKE_PROJECT_NAME} SHARED ${SOURCE_FILES})
 target_link_libraries(${CMAKE_PROJECT_NAME}
     ${OpenCV_LIBS}
     ${LIBRARIES}
     Eigen3::Eigen
+    Maya::Maya
     )
+MAYA_PLUGIN(${CMAKE_PROJECT_NAME})
+set(PLUGIN_OUTPUT_PATH ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.mll)
+if(EXISTS ${PLUGIN_OUTPUT_PATH})
+	configure_file(${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.mll ${MAYA_PLUGIN_OUTPUT_DIR} COPYONLY)
+endif()

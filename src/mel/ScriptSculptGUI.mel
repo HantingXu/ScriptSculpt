@@ -1,0 +1,213 @@
+global int $curInd = 1;
+
+global string $shapePath;
+
+
+global proc makeLSystemNodeWindow() {
+
+    global string $shapePath = "C:\\Users\\2000\\ScriptSculpt\\img\\bunny.jpg";
+    global int $curInd = 1;
+
+    string $window = `window -title "ScriptSculpt"`;
+    paneLayout -configuration "horizontal2";
+    	frameLayout -labelVisible false -marginHeight 10 -marginWidth 5 -collapsable false -borderVisible false;
+    	    rowLayout -numberOfColumns 3 -adjustableColumn 2 -columnAlign3 "left" "center" "right";
+    	    setParent ..;
+    	frameLayout -labelVisible false -marginHeight 5 -marginWidth 20 -collapsable false -borderVisible false;
+    	    rowLayout -numberOfColumns 3 -adjustableColumn 2 -columnAlign3 "left" "center" "right";
+    	        columnLayout -adjustableColumn true;
+    	            text -label "Silhouette Image";
+    	            shelfButton -image $shapePath 
+    	                -width 150
+    	                -height 200
+    	                -manage 1
+                        -visible 1
+                        -style "iconAndTextHorizontal"
+                        -align "left"
+    	                -scaleIcon
+    	                sihouetteImage;
+    	            button -label "Browse..." -command "$shapePath = loadFile()";
+    	        setParent ..;
+    	    text -label "";
+    	        columnLayout -adjustableColumn true;
+    	            text -label "Preview Image";
+    	            shelfButton -image $shapePath 
+    	                -width 150
+    	                -height 200
+    	                -manage 1
+                        -visible 1
+                        -style "iconAndTextHorizontal"
+                        -align "right"
+    	                -scaleIcon
+    	                previewImage;
+    	            button -label "Save" -command "$shapePath = loadFile()";
+    	        setParent ..;
+    	     setParent..;
+    	setParent ..;
+    	frameLayout -labelVisible false -marginHeight 5 -marginWidth 20 -collapsable false -borderVisible false;
+    	    columnLayout -adjustableColumn true;
+    	        rowLayout -numberOfColumns 2 -adjustableColumn 2 -columnAlign2 "left" "right";
+    	           text -label "Input Text:     "; 
+    	           textField -editable true inputWord;
+    	        setParent ..;
+    	    setParent ..;
+    	setParent ..;
+    	
+    	frameLayout -label "Font Color" -collapsable true -backgroundShade true -borderVisible false;    
+    	    rowLayout -numberOfColumns 4 -adjustableColumn 2 -columnAlign3 "left" "center" "right";
+                text -label "";
+                shelfButton -backgroundColor 1 1 1
+    	            -width 40
+    	            -height 40
+    	            -manage 1
+                    -visible 1
+                    -align "right"
+                    -style "iconAndTextHorizontal"
+    	            -scaleIcon
+    	            fontColor;
+                text -label "";
+                columnLayout -adjustableColumn true;
+                    intSliderGrp -label "R:" -field true -minValue 0 -maxValue 255 -value 255 -cc "updateColor(0);" fontRedSlider;
+                    intSliderGrp -label "G:" -field true -minValue 0 -maxValue 255 -value 255 -cc "updateColor(0);" fontGreenSlider;
+                    intSliderGrp -label "B:" -field true -minValue 0 -maxValue 255 -value 255 -cc "updateColor(0);" fontBlueSlider;
+                setParent ..;
+            setParent ..;
+        setParent ..;
+        frameLayout -label "Background Color" -collapsable true -backgroundShade true -borderVisible false; 
+            rowLayout -numberOfColumns 4 -adjustableColumn 2 -columnAlign3 "left" "center" "right";
+                text -label "";
+                shelfButton -backgroundColor 0 0 0
+    	            -width 40
+    	            -height 40
+    	            -manage 1
+                    -visible 1
+                    -align "right"
+                    -style "iconAndTextHorizontal"
+    	            -scaleIcon
+    	            backColor;
+                text -label "";
+                columnLayout -adjustableColumn true;
+                    intSliderGrp -label "R:" -field true -minValue 0 -maxValue 255 -value 0 -cc "updateColor(1);" backRedSlider;
+                    intSliderGrp -label "G:" -field true -minValue 0 -maxValue 255 -value 0 -cc "updateColor(1);" backGreenSlider;
+                    intSliderGrp -label "B:" -field true -minValue 0 -maxValue 255 -value 0 -cc "updateColor(1);" backBlueSlider;
+                setParent ..;
+            setParent ..;
+        setParent ..;
+        
+            frameLayout -labelVisible false -marginHeight 3 -marginWidth 40 -collapsable false -borderVisible false;
+                rowLayout -numberOfColumns 3 -adjustableColumn 2 -columnAlign3 "left" "center" "right";
+    		        button -label "Generate Preview" -align "left" -width 160 -command "onCreate";
+    		        text -label "";
+    		        button -label "Generate Mesh" -align "right" -width 160 -command "createNode($grm)";
+    		    setParent..;
+    		setParent..;
+    showWindow $window;
+}
+makeLSystemNodeWindow();
+
+global proc onCreate()
+{
+    global string $shapePath;
+    
+    int $bRed = `intSliderGrp -q -value backRedSlider`;
+    int $bGreen = `intSliderGrp -q -value backGreenSlider`;
+    int $bBlue = `intSliderGrp -q -value backBlueSlider`;
+    int $fRed = `intSliderGrp -q -value fontRedSlider`;
+    int $fGreen = `intSliderGrp -q -value fontGreenSlider`;
+    int $fBlue = `intSliderGrp -q -value fontBlueSlider`;
+    
+    string $word = `textField -q -tx inputWord`;
+    print($word);
+    print($shapePath);
+    print($bRed);
+    print($bGreen);
+    print($bBlue);
+    print($fRed);
+    print($fGreen);
+    print($fBlue);
+    //printConfirmations($tx, $iterV, $stepV, $angleV);
+
+    // Call cmd
+    //LSystemCmd -grammar $tx -iterations $iterV -step $stepV -angle $angleV -id $currNum_LS;
+
+    //$currNum_LS = $currNum_LS + 1;
+}
+
+// Define a function to execute when any slider changes
+proc updateColor(int $colType) {
+    float $red = 0;
+    float $green = 0;
+    float $blue = 0;
+    if($colType)
+    {
+        $red = `intSliderGrp -q -value backRedSlider`;
+        $green = `intSliderGrp -q -value backGreenSlider`;
+        $blue = `intSliderGrp -q -value backBlueSlider`;
+    }
+    else
+    {
+        $red = `intSliderGrp -q -value fontRedSlider`;
+        $green = `intSliderGrp -q -value fontGreenSlider`;
+        $blue = `intSliderGrp -q -value fontBlueSlider`;
+    }
+    
+    $red = $red / 255.0;
+    $green = $green / 255.0;
+    $blue = $blue / 255.0;
+
+    setIconColor $red $green $blue $colType;
+}
+
+proc setIconColor(float $r, float $g, float $b, int $colType)
+{
+    if($colType)
+    {
+       shelfButton -e
+            -backgroundColor $r $g $b
+    	    -width 40
+    	    -height 40
+    	    -manage 1
+            -visible 1
+            -style "iconAndTextHorizontal"
+            -align "right"
+    	    -scaleIcon
+    	    backColor;
+    }
+    else
+    {
+        shelfButton -e
+            -backgroundColor $r $g $b
+    	    -width 40
+    	    -height 40
+    	    -manage 1
+            -visible 1
+            -style "iconAndTextHorizontal"
+            -align "right"
+    	    -scaleIcon
+    	    fontColor;
+    }
+}
+
+global proc string loadFile()
+{
+    string $selectedFile = getFileBrowserDialog();
+    shelfButton -e
+                -image $selectedFile
+    	        -width 150
+    	        -height 200
+    	        -manage 1
+                -visible 1
+                -style "iconAndTextHorizontal"
+                -align "left"
+    	        -scaleIcon
+    	        sihouetteImage;
+    return $selectedFile;
+
+}
+
+global proc string getFileBrowserDialog()
+{
+    string $fileFilter = "Image Files (*.png *.jpg *.bmp *.jpeg);;All Files (*.*);;";
+    string $result[] = `fileDialog2 -fileMode 1 -dialogStyle 2 -fm 1 -okCaption "Select" -cancelCaption "Cancel" -fileFilter $fileFilter`;
+    return $result[0];
+}

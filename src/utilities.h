@@ -3,12 +3,13 @@
 #include "sceneStruct.h"
 #include "LetterAlignment.h"
 #include "GASolver.h"
+#include "deformation.h"
 #include <Eigen/Dense>
 
 namespace utilityCore
 {
 	extern void extractContour(const cv::Mat& thresh, cv::Mat& outImg, std::vector<cv::Point>& contour);
-	extern void extractContour(const cv::Mat& thresh, cv::Mat& outImg, std::vector<cv::Point>& contour, const cv::Scalar& color);
+	extern void extractContour(const cv::Mat& thresh, cv::Mat& outImg, std::vector<cv::Point>& contour, const cv::Scalar& fontColor, const cv::Scalar& backColor);
 
 	extern void genMask(const cv::Mat& input, cv::Mat& mask);
 	extern void genProtrusions(cv::Mat& preData, cv::Mat& nProImg, std::vector<Protrusion>& protrustions);
@@ -21,5 +22,6 @@ namespace utilityCore
 	extern void processProtrusions(const std::vector<cv::Point>& centerline, std::vector<Protrusion>& protrustions);
 	extern void subdivide(const int number, const std::vector<cv::Point>& centerline, std::vector<int>& midPoints, std::vector<Eigen::Vector2f>& normals);
 	extern void solveGA(LetterAlignment& letterAlign);
+	extern void genMayaImage(const std::string& shapePath, const std::string& word, const vec3& fontColor, const vec3& backColor, cv::Mat& outputImg);
 }
 
