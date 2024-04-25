@@ -91,21 +91,15 @@ MStatus ScriptSculptCmd::doIt(const MArgList& args)
 			}
 		}
 	}
-	/*
-	* C:/Users/2000/ScriptSculpt/img/bunny_font.jpg
-	*/
 	MGlobal::displayInfo("CONNECT");
 	MGlobal::displayInfo(inputText.c_str());
 	MGlobal::displayInfo(shapePath.c_str());
 	cv::Mat previewImg(400, 400, CV_8UC3, cv::Scalar(0, 0, 0));;
 	utilityCore::genMayaImage(shapePath, inputText, fontColor, backColor, previewImg);
-	//utilityCore::genMayaImage(shapePath, previewImg);
-	std::string path = "C:/Users/2000/ScriptSculpt/img/bunny_font.jpg";
 	std::size_t botDirPos = shapePath.find_last_of("/");
 	std::string filePath = shapePath.substr(0, botDirPos) + "/" + inputText + "_font.jpg";
 	cv::imwrite(filePath, previewImg);
 	MGlobal::displayInfo(MString(filePath.c_str()));
-	//MGlobal::executeCommand("iconTextButton -e -image \"C:/Users/2000/ScriptSculpt/img/bunny_font.jpg\" -width 150 -height 200 -manage 1 -visible 1 -style \"iconAndTextHorizontal\" -align \"left\" -scaleIcon previewImage;");
 	MGlobal::executeCommand("iconTextButton -e -image \"" + MString(filePath.c_str()) + "\" -width 150 -height 200 -manage 1 -visible 1 -style \"iconAndTextHorizontal\" -align \"left\" -scaleIcon previewImage;");
 	return MStatus::kSuccess;
 }
