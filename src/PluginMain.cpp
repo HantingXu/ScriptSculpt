@@ -25,13 +25,14 @@ MStatus initializePlugin(MObject obj)
         return status;
     }
     
-    std::string p = plugin.loadPath().asChar();
-    MGlobal::displayInfo(p.c_str());
-    std::string pluginSource = "C:/Users/2000/ScriptSculpt/src";
+    std::string path = plugin.loadPath().asChar();
+    std::size_t botDirPos = path.find_last_of("/");
+    std::string rootPath = path.substr(0, botDirPos);
+    MGlobal::displayInfo(path.c_str());
     char buffer1[2048];
-    std::string pluginSource1 = "source \"" + pluginSource + "/ScriptSculptGUI.mel\";";
+    std::string pluginSource = "source \"" + rootPath + "/src/ScriptSculptGUI.mel\";";
     //std::string pp = "source C:/Users/2000/ScriptSculpt/src/ScriptSculptGUI.mel";
-    sprintf_s(buffer1, 2048, pluginSource1.c_str(), plugin.loadPath());
+    sprintf_s(buffer1, 2048, pluginSource.c_str(), plugin.loadPath());
     //sprintf_s(buffer1, 2048, pp.c_str(), plugin.loadPath());
     MGlobal::executeCommand(buffer1, true);
 

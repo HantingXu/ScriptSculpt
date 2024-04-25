@@ -5,7 +5,7 @@ global string $shapePath;
 
 global proc makeLSystemNodeWindow() {
 
-    global string $shapePath = "C:\\Users\\2000\\ScriptSculpt\\img\\bunny.jpg";
+    global string $shapePath = "";
     global int $curInd = 1;
 
     string $window = `window -title "ScriptSculpt"`;
@@ -17,7 +17,7 @@ global proc makeLSystemNodeWindow() {
     	    rowLayout -numberOfColumns 3 -adjustableColumn 2 -columnAlign3 "left" "center" "right";
     	        columnLayout -adjustableColumn true;
     	            text -label "Silhouette Image";
-    	            shelfButton -image $shapePath 
+    	            iconTextButton -image $shapePath 
     	                -width 150
     	                -height 200
     	                -manage 1
@@ -31,7 +31,7 @@ global proc makeLSystemNodeWindow() {
     	    text -label "";
     	        columnLayout -adjustableColumn true;
     	            text -label "Preview Image";
-    	            shelfButton -image $shapePath 
+    	            iconTextButton -image $shapePath 
     	                -width 150
     	                -height 200
     	                -manage 1
@@ -189,7 +189,7 @@ global proc setIconColor(float $r, float $g, float $b, int $colType)
 global proc string loadFile()
 {
     string $selectedFile = getFileBrowserDialog();
-    shelfButton -e
+    iconTextButton -e
                 -image $selectedFile
     	        -width 150
     	        -height 200

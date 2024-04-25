@@ -590,7 +590,7 @@ void utilityCore::genMayaImage(const std::string& shapePath, const std::string& 
     cv::threshold(gray, gray, 170, 255, THRESH_BINARY_INV);
     ImgShape imgShape;
     imgShape.grayScale = gray;
-
+    cv::imshow("dss", gray);
     //extract contour
     std::vector<Point> contour;
     cv::Mat contourImg = cv::Mat::zeros(gray.size(), gray.type());
@@ -667,5 +667,6 @@ void utilityCore::genMayaImage(const std::string& shapePath, const std::string& 
         letterDeform.letters[i].drawBezierCurve(contourImgColor, backColor);
         //letterDeform.letters[i].drawNormal(canvas1);
     }
+    cv::imshow("sss", contourImg);
     outputImg = contourImgColor;
 }
