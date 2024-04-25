@@ -580,7 +580,7 @@ void utilityCore::solveGA(LetterAlignment& align)
     align.setLetters(ga_obj.last_generation.chromosomes[idx].genes);
 }
 
-void utilityCore::genMayaImage(const std::string& shapePath, const std::string& word, const vec3& fontColor, const vec3& backColor, cv::Mat& outputImg)
+void utilityCore::genMayaImage(const std::string& shapePath, const std::string& word, const vec3& fontColor, const vec3& backColor, cv::Mat& outputImg, LetterDeform& letterDeform)
 {
 
     cv::Mat src = cv::imread(shapePath);
@@ -637,7 +637,7 @@ void utilityCore::genMayaImage(const std::string& shapePath, const std::string& 
 
     align.letters[0].split();
 
-    LetterDeform letterDeform = LetterDeform(align.letters, imgShape, ctrImg);
+    letterDeform = LetterDeform(align.letters, imgShape, ctrImg);
     letterDeform.updateNormal();;
     Deform deform = Deform(40000, 10, 2.5, 0.025, &letterDeform);
     std::vector<std::vector<int>> sol;

@@ -1618,3 +1618,44 @@ void Letter::checkNormal()
 		this->controlPoints[i]->normal = this->controlPoints[i]->getNormal();
 	}
 }
+
+void Letter::generatePointArray(std::vector<float>& points) {
+	ControlPoint* curr = start;
+	do {
+		{
+			for (int j = 0; j < 4; j++) {
+				vec3 point = vec3(curr->pos.x(), curr->pos.y(), 1.f);
+				vec3 controlPointsTransformed = this->getTransformMat() * point;
+				points.push_back(controlPointsTransformed.x());
+				points.push_back(-controlPointsTransformed.y());
+				points.push_back(0);
+				if (j != 3) curr = curr->next;
+			}
+		}
+	} while (curr != start);
+}
+
+void Letter::generateInnerPointArray(std::vector<float>&points) {
+	ControlPoint* curr;
+	if (this->innerPoints.size() == 0) {
+		curr = nullptr;
+	}
+	else {
+		curr = this->innerPoints[0].get();
+	}
+	do {
+		if (curr == nullptr) break;
+		{
+			std::vector<vec3> controlPointsTransformed;
+			for (int j = 0; j < 4; j++) {
+				vec3 point = vec3(curr->pos.x(), curr->pos.y(), 1.f);
+				vec3 controlPointsTransformed = this->getTransformMat() * point;
+				points.push_back(controlPointsTransformed.x());
+				points.push_back(-controlPointsTransformed.y());
+				points.push_back(0);
+				if (j != 3) curr = curr->next;
+			}
+		}
+	} while (curr != this->innerPoints[0].get());
+
+}

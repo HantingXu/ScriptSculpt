@@ -18,7 +18,7 @@ global proc makeLSystemNodeWindow() {
     	        columnLayout -adjustableColumn true;
     	            text -label "Silhouette Image";
     	            iconTextButton -image $shapePath 
-    	                -width 150
+    	                -width 200
     	                -height 200
     	                -manage 1
                         -visible 1
@@ -32,7 +32,7 @@ global proc makeLSystemNodeWindow() {
     	        columnLayout -adjustableColumn true;
     	            text -label "Preview Image";
     	            iconTextButton -image $shapePath 
-    	                -width 150
+    	                -width 200
     	                -height 200
     	                -manage 1
                         -visible 1
@@ -96,16 +96,16 @@ global proc makeLSystemNodeWindow() {
         
             frameLayout -labelVisible false -marginHeight 3 -marginWidth 40 -collapsable false -borderVisible false;
                 rowLayout -numberOfColumns 3 -adjustableColumn 2 -columnAlign3 "left" "center" "right";
-    		        button -label "Generate Preview" -align "left" -width 160 -command "onCreate";
+    		        button -label "Generate Preview" -align "left" -width 160 -command "onCreate(1)";
     		        text -label "";
-    		        button -label "Generate Mesh" -align "right" -width 160 -command "createNode($grm)";
+    		        button -label "Generate Mesh" -align "right" -width 160 -command "onCreate(0)";
     		    setParent..;
     		setParent..;
     showWindow $window;
 }
 makeLSystemNodeWindow();
 
-global proc onCreate()
+global proc onCreate(int $isPreview)
 {
     global string $shapePath;
     
@@ -126,7 +126,7 @@ global proc onCreate()
     print($fGreen);
     print($fBlue);
     // Call cmd
-    ScriptSculptCmd -word $word -shapePath $shapePath -bRed $bRed -bGreen $bGreen -bBlue $bBlue -fRed $fRed -fGreen $fGreen -fBlue $fBlue;
+    ScriptSculptCmd -word $word -shapePath $shapePath -bRed $bRed -bGreen $bGreen -bBlue $bBlue -fRed $fRed -fGreen $fGreen -fBlue $fBlue -p $isPreview;
 
     //$currNum_LS = $currNum_LS + 1;
 }
@@ -191,7 +191,7 @@ global proc string loadFile()
     string $selectedFile = getFileBrowserDialog();
     iconTextButton -e
                 -image $selectedFile
-    	        -width 150
+    	        -width 200
     	        -height 200
     	        -manage 1
                 -visible 1

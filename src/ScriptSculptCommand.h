@@ -13,4 +13,6 @@ public:
 	MStatus doIt(const MArgList& args);
 
 	static MString openWinItem;
+	static LetterDeform letters;
+	static bool hasPreview;
 };

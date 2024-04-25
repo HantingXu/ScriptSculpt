@@ -12,6 +12,7 @@ private:
 public:
 	std::vector<Letter> letters;
 	LetterDeform(std::vector<Letter>& letters, ImgShape& shape, cv::Mat& contr);
+	LetterDeform();
 	~LetterDeform();
 
 	void updateNormal();

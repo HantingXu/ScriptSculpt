@@ -22,6 +22,6 @@ namespace utilityCore
 	extern void processProtrusions(const std::vector<cv::Point>& centerline, std::vector<Protrusion>& protrustions);
 	extern void subdivide(const int number, const std::vector<cv::Point>& centerline, std::vector<int>& midPoints, std::vector<Eigen::Vector2f>& normals);
 	extern void solveGA(LetterAlignment& letterAlign);
-	extern void genMayaImage(const std::string& shapePath, const std::string& word, const vec3& fontColor, const vec3& backColor, cv::Mat& outputImg);
+	extern void genMayaImage(const std::string& shapePath, const std::string& word, const vec3& fontColor, const vec3& backColor, cv::Mat& outputImg, LetterDeform&);
 }
 

@@ -146,10 +146,10 @@ int main()
     //Letter l7 = l.getLetter('N');
     //Letter l8 = l.getLetter('O');
     letters.push_back(l1);
-    letters.push_back(l2);
-    letters.push_back(l3);
-    letters.push_back(l4);
-    letters.push_back(l5);
+    //letters.push_back(l2);
+    //letters.push_back(l3);
+    //letters.push_back(l4);
+    //letters.push_back(l5);
 
     //letters.push_back(l6);
     //letters.push_back(l7);
@@ -215,6 +215,23 @@ int main()
     //cv::imshow("contour", canvas1);
     cv::imshow("WithContour", contourImgColor);
     cv::imshow("NoContour", image);
+
+    std::vector<float> points;
+    letterDeform.letters[0].generatePointArray(points);
+    int numPoints = points.size();
+    std::vector<vec3> pointArray;
+    for (int i = 0; i < numPoints; i += 3) {
+        pointArray.push_back(vec3(points[i], points[i + 1], points[i + 2]));
+    }
+    std::vector<vec3> curvePoints;
+    for (int i = 0; i < numPoints; i += 4) {
+        if (i + 3 < numPoints) {
+            curvePoints.push_back(pointArray[i]);
+            curvePoints.push_back(pointArray[i + 1]);
+            curvePoints.push_back(pointArray[i + 2]);
+            curvePoints.push_back(pointArray[i + 3]);
+        }
+    }
 #endif
     /*
     letterDeform.splitLetter();

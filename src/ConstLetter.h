@@ -75,6 +75,8 @@ public:
 	void update(const std::vector<int>&, std::vector<vec2>& ptsPos, float miu);
 	void checkNormal();
 	void checkOnShape(cv::Mat& contour);
+	void generatePointArray(std::vector<float>&);
+	void generateInnerPointArray(std::vector<float>&);
 	friend class ConstLetters;
 	friend class LetterAlignment;
 	friend class ControlPoint;
