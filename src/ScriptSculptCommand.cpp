@@ -4,6 +4,11 @@
 #include <maya/MFnNurbsCurve.h>
 #include <maya/MObjectArray.h>
 #include <maya/MDagModifier.h>
+#include <maya/MItSelectionList.h>
+#include <maya/MFnSet.h>
+#include <maya/MSelectionList.h>
+#include <maya/MFnDependencyNode.h>
+#include <maya/MDagPath.h>
 
 LetterDeform ScriptSculptCmd::letters;
 bool ScriptSculptCmd::hasPreview;
@@ -184,6 +189,7 @@ MStatus ScriptSculptCmd::doIt(const MArgList& args)
 					}
 				}
 
+
 				if (curveObjects.length() > 0) {
 					MObject groupNode = dagMod.createNode("transform", MObject::kNullObj, &status);
 					if (!status) {
@@ -199,6 +205,21 @@ MStatus ScriptSculptCmd::doIt(const MArgList& args)
 						}
 					}
 					dagMod.doIt();
+
+					MDagPath dagPath;
+					MFnDagNode dagNodeFn(groupNode);
+					dagNodeFn.getPath(dagPath);
+
+					for (unsigned int i = 0; i < dagNodeFn.childCount(); ++i) {
+						MObject child = dagNodeFn.child(i);
+						MFnDependencyNode depNode(child);
+						MGlobal::selectByName(depNode.name(), MGlobal::kAddToList);
+					}
+
+					if (!MGlobal::executeCommand("planarSrf -ch 1 -d 3 -ko 0 -tol 0.01 -rn 0 -po 1")) {
+						MGlobal::displayError("Failed to create planar surface");
+						return MS::kFailure;
+					}
 				}
 			}
 			

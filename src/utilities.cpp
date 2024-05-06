@@ -632,22 +632,48 @@ void utilityCore::genMayaImage(const std::string& shapePath, const std::string& 
     }
 
     LetterAlignment align = LetterAlignment(letters, imgShape);
-    align.initialAlignment();
-    utilityCore::solveGA(align);
-
-    align.letters[0].split();
+    int num_iter = 0;
+    int MAX_ITERS = 30;
+    float min_score = INFINITY;
+    LetterAlignment curr = LetterAlignment(letters, imgShape);
+    while (true) {
+        curr.initialAlignment();
+        utilityCore::solveGA(curr);
+        float currScore = curr.refinedAlignment();
+        if (num_iter > MAX_ITERS) {
+            break;
+        }
+        else {
+            if (currScore < min_score) {
+                min_score = currScore;
+                align = curr;
+            }
+        }
+        curr = LetterAlignment(letters, imgShape);
+        num_iter++;
+    }
 
     letterDeform = LetterDeform(align.letters, imgShape, ctrImg);
     letterDeform.updateNormal();;
     Deform deform = Deform(40000, 10, 2.5, 0.025, &letterDeform);
     std::vector<std::vector<int>> sol;
 
-    for (int i = 0; i < 150; i++)
+    for (int i = 0; i < 400; i++)
+    {
+        deform.localStep(sol, true);
+        letterDeform.updateLetter(sol, 4);
+    }
+
+    sol = {};
+    for (int i = 0; i < letterDeform.letters.size(); i++) {
+        letterDeform.letters[i].split();
+    }
+    for (int i = 0; i < 200; i++)
     {
         deform.localStep(sol, true);
         letterDeform.updateLetter(sol, 2.5);
-    }
 
+    }
 
     cv::Mat canvas1 = contourImg.clone();
     cv::Mat canvas2 = contourImg.clone();
